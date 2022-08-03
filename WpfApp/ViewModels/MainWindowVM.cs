@@ -12,10 +12,12 @@ namespace WpfApp.ViewModels
     public class MainWindowVM
     {
         private readonly IAlbumService _albumService;
+        private readonly IPhotoService _photoService;
 
-        public MainWindowVM(IAlbumService albumService)
+        public MainWindowVM(IAlbumService albumService, IPhotoService photoService)
         {
             _albumService = albumService;
+            _photoService = photoService;
 
             Albums = new ObservableCollection<AlbumVM>();
 
@@ -27,10 +29,11 @@ namespace WpfApp.ViewModels
         private async Task GetAlbumsInternal()
         {
             var albums = await _albumService.GetAlbums();
-
-            var albumVMs = albums.Select(album => new AlbumVM(album));
-
-            Albums.AddRange(albumVMs);
+            foreach (var album in albums)
+            {
+                var photos = await _photoService.GetAlbumPhotos(album.Id);
+                Albums.Add(new AlbumVM(album, photos));
+            }
         }
 
         public ICommand GetAlbums { get; }
