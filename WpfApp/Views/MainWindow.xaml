@@ -17,6 +17,10 @@
         <StackPanel Grid.Row="0" Orientation="Horizontal">
             <Button Content="Get" Command="{Binding GetAlbums}"/>
             <Button Content="Clear" Command="{Binding ClearAlbums}"/>
+            <StackPanel Orientation="Horizontal">
+                <Label Content="Search"/>
+                <TextBox Text="{Binding AlbumSearch, UpdateSourceTrigger=PropertyChanged}"/>
+            </StackPanel>
         </StackPanel>
 
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" >

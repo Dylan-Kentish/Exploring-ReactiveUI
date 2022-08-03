@@ -1,7 +1,11 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using DynamicData;
 using DynamicData.Aggregation;
 using DynamicData.Binding;
 using ReactiveUI;
@@ -9,21 +13,48 @@ using WpfApp.Services;
 
 namespace WpfApp.ViewModels
 {
-    public class MainWindowVM
+    public sealed class MainWindowVM : ReactiveObject, IDisposable
     {
+        private readonly CompositeDisposable _disposable;
         private readonly IAlbumService _albumService;
         private readonly IPhotoService _photoService;
+        private readonly ObservableCollection<AlbumVM> _allAlbums;
+        private readonly ReadOnlyObservableCollection<AlbumVM> _filteredAlbums;
+        private string? _albumSearch;
 
         public MainWindowVM(IAlbumService albumService, IPhotoService photoService)
         {
             _albumService = albumService;
             _photoService = photoService;
+            _disposable = new CompositeDisposable();
 
-            Albums = new ObservableCollection<AlbumVM>();
+            _allAlbums = new ObservableCollection<AlbumVM>();
 
             GetAlbums = ReactiveCommand.CreateFromTask(GetAlbumsInternal);
 
-            ClearAlbums = ReactiveCommand.Create(Albums.Clear, Albums.ToObservableChangeSet().IsNotEmpty());
+            var observableChangeSet = _allAlbums.ToObservableChangeSet();
+
+            ClearAlbums = ReactiveCommand.Create(_allAlbums.Clear, observableChangeSet.IsNotEmpty());
+
+            var observableFilter = this.WhenAnyValue(x => x.AlbumSearch)
+                .Throttle(TimeSpan.FromSeconds(0.5), RxApp.TaskpoolScheduler)
+                .Select(query => query?.Trim())
+                .DistinctUntilChanged()
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .Select(MakeFilter);
+            
+            var myDerivedCache = observableChangeSet
+                .Filter(observableFilter)
+                .AsObservableList();
+
+            _ = myDerivedCache.DisposeWith(_disposable);
+
+            _ = myDerivedCache
+                .Connect()
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .Bind(out _filteredAlbums)
+                .Subscribe()
+                .DisposeWith(_disposable);
         }
 
         private async Task GetAlbumsInternal()
@@ -32,7 +63,7 @@ namespace WpfApp.ViewModels
             foreach (var album in albums)
             {
                 var photos = await _photoService.GetAlbumPhotos(album.Id);
-                Albums.Add(new AlbumVM(album, photos));
+                _allAlbums.Add(new AlbumVM(album, photos));
             }
         }
 
@@ -40,6 +71,22 @@ namespace WpfApp.ViewModels
 
         public ICommand ClearAlbums { get; }
 
-        public ObservableCollection<AlbumVM> Albums { get; set; }
+        public ReadOnlyObservableCollection<AlbumVM> Albums => _filteredAlbums;
+
+        public string? AlbumSearch
+        {
+            get => _albumSearch;
+            set => this.RaiseAndSetIfChanged(ref _albumSearch, value);
+        }
+
+        private static Func<AlbumVM, bool> MakeFilter(string? filter)
+        {
+            return album => string.IsNullOrWhiteSpace(filter) || album.Title.Contains(filter);
+        }
+
+        public void Dispose()
+        {
+            _disposable.Dispose();
+        }
     }
 }
