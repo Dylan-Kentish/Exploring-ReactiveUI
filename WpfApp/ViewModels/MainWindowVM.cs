@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using DynamicData.Aggregation;
 using DynamicData.Binding;
@@ -18,14 +19,14 @@ namespace WpfApp.ViewModels
 
             Albums = new ObservableCollection<AlbumVM>();
 
-            GetAlbums = ReactiveCommand.Create(GetAlbumsInternal);
+            GetAlbums = ReactiveCommand.CreateFromTask(GetAlbumsInternal);
 
             ClearAlbums = ReactiveCommand.Create(Albums.Clear, Albums.ToObservableChangeSet().IsNotEmpty());
         }
 
-        private void GetAlbumsInternal()
+        private async Task GetAlbumsInternal()
         {
-            var albums = _albumService.GetAlbums();
+            var albums = await _albumService.GetAlbums();
 
             var albumVMs = albums.Select(album => new AlbumVM(album));
 

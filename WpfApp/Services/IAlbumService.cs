@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using WpfApp.Model;
 
 namespace WpfApp.Services;
 
 public interface IAlbumService
 {
-    IEnumerable<Album> GetAlbums();
+    Task<IEnumerable<Album>> GetAlbums();
 }
