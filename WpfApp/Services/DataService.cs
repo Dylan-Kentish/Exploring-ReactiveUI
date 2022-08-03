@@ -17,7 +17,6 @@ public class DataService : IAlbumService, IPhotoService
     private const string AlbumsPath = UriString + "albums";
     private const string PhotosPath = UriString + "photos";
 
-
     private readonly HttpClient _client = new();
 
     public DataService()
