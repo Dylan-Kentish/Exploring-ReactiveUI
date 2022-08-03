@@ -4,7 +4,7 @@ using System.Windows.Input;
 using DynamicData.Aggregation;
 using DynamicData.Binding;
 using ReactiveUI;
-using WpfApp.Service;
+using WpfApp.Services;
 
 namespace WpfApp.ViewModels
 {
