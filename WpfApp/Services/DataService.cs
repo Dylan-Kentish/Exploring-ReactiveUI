@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using WpfApp.Model;
 
-namespace WpfApp.Service;
+namespace WpfApp.Services;
 
-public class AlbumService : IAlbumService
+public class DataService : IAlbumService
 {
     public IEnumerable<Album> GetAlbums()
     {
@@ -14,3 +13,4 @@ public class AlbumService : IAlbumService
         }
     }
 }
+

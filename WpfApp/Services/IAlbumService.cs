@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using WpfApp.Model;
 
-namespace WpfApp.Service;
+namespace WpfApp.Services;
 
 public interface IAlbumService
 {
