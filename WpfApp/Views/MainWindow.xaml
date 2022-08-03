@@ -16,14 +16,32 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <StackPanel Grid.Row="0" Orientation="Horizontal">
-            <Button Content="Get" Command="{Binding GetAlbums}"/>
-            <Button Content="Clear" Command="{Binding ClearAlbums}"/>
-            <StackPanel Orientation="Horizontal">
-                <Label Content="Search"/>
-                <TextBox Text="{Binding AlbumSearch, UpdateSourceTrigger=PropertyChanged}"/>
-            </StackPanel>
-        </StackPanel>
+        <Grid Grid.Row="0" Margin="5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Button Grid.Column="0" Margin="5" Content="Get" Command="{Binding GetAlbums}"/>
+            <Button Grid.Column="1" Margin="5" Content="Clear" Command="{Binding ClearAlbums}"/>
+
+            <Grid Grid.Column="2" HorizontalAlignment="Right">
+                <TextBox x:Name="SearchTextBox" VerticalContentAlignment="Center" Text="{Binding AlbumSearch, UpdateSourceTrigger=PropertyChanged}" MinWidth="150" MaxWidth="150" Margin="5"/>
+                <TextBlock IsHitTestVisible="False" Text="🔍" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,15,0" Foreground="DarkGray">
+                    <TextBlock.Style>
+                        <Style TargetType="{x:Type TextBlock}">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Text, ElementName=SearchTextBox}" Value="">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+            </Grid>
+        </Grid>
 
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" >
             <ItemsControl ItemsSource="{Binding Albums}">
