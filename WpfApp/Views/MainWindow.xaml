@@ -6,69 +6,142 @@
         xmlns:ui="http://schemas.modernwpf.com/2019"
         xmlns:vms="clr-namespace:WpfApp.ViewModels"
         xmlns:local="clr-namespace:WpfApp.Views"
+        xmlns:converters="clr-namespace:WpfApp.Converters"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance vms:MainWindowVM}"
+        ui:ThemeManager.IsThemeAware="True"
+        Height="450" Width="800"
         ui:WindowHelper.UseModernWindowStyle="True"
-        Height="450" Width="800">
+        ui:TitleBar.ExtendViewIntoTitleBar="True"
+        ui:TitleBar.IsBackButtonVisible="True"
+        ui:TitleBar.Style="{DynamicResource AppTitleBarStyle}"
+        ui:TitleBar.ButtonStyle="{DynamicResource AppTitleBarButtonStyle}"
+        ui:TitleBar.BackButtonStyle="{DynamicResource AppTitleBarBackButtonStyle}">
+
+    <Window.Resources>
+        <converters:PixelsToGridLengthConverter x:Key="PixelsToGridLength" />
+        <Style x:Key="AppTitleBarButtonStyle" TargetType="ui:TitleBarButton">
+            <Setter Property="IsActive" Value="{Binding IsActive, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" />
+        </Style>
+        <Style x:Key="AppTitleBarBackButtonStyle" TargetType="ui:TitleBarButton" BasedOn="{StaticResource AppTitleBarButtonStyle}">
+            <Setter Property="IsHitTestVisible" Value="False" />
+        </Style>
+    </Window.Resources>
+
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0" Margin="5">
+        <Grid
+            x:Name="AppTitleBar"
+            Background="{DynamicResource SystemControlBackgroundChromeMediumBrush}"
+            Height="{Binding Path=(ui:TitleBar.Height), RelativeSource={RelativeSource AncestorType={x:Type Window}}}">
+
+            <Grid.Style>
+                <Style TargetType="Grid">
+                    <Setter Property="TextElement.Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsActive, ElementName=Window}" Value="False">
+                            <Setter Property="TextElement.Foreground" Value="{DynamicResource SystemControlDisabledBaseMediumLowBrush}" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Style>
+
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="{Binding 
+                    Path=(ui:TitleBar.SystemOverlayLeftInset),
+                    Converter={StaticResource PixelsToGridLength}, 
+                    RelativeSource={RelativeSource AncestorType={x:Type Window}}}" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="{Binding 
+                    Path=(ui:TitleBar.SystemOverlayRightInset),
+                    Converter={StaticResource PixelsToGridLength},
+                    RelativeSource={RelativeSource AncestorType={x:Type Window}}}" />
             </Grid.ColumnDefinitions>
 
-            <Button Grid.Column="0" Margin="5" Content="Get" Command="{Binding GetAlbums}"/>
-            <Button Grid.Column="1" Margin="5" Content="Clear" Command="{Binding ClearAlbums}"/>
+            <ui:TitleBarButton
+                Grid.Column="0"
+                Style="{StaticResource AppTitleBarButtonStyle}"
+                Content="&#xE771;"
+                FontSize="17"
+                ContentTemplate="{x:Null}" 
+                Command="{Binding ChangeTheme}"/>
 
-            <Grid Grid.Column="2" HorizontalAlignment="Right">
-                <TextBox x:Name="SearchTextBox" VerticalContentAlignment="Center" Text="{Binding AlbumSearch, UpdateSourceTrigger=PropertyChanged}" MinWidth="150" MaxWidth="150" Margin="5"/>
-                <TextBlock IsHitTestVisible="False" Text="🔍" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,15,0" Foreground="DarkGray">
-                    <TextBlock.Style>
-                        <Style TargetType="{x:Type TextBlock}">
-                            <Setter Property="Visibility" Value="Collapsed"/>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding Text, ElementName=SearchTextBox}" Value="">
-                                    <Setter Property="Visibility" Value="Visible"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBlock.Style>
-                </TextBlock>
-            </Grid>
+            <!-- Horizontally centered title -->
+            <TextBlock
+                Grid.Column="0"
+                Grid.ColumnSpan="5"
+                FontSize="13"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Text="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}, Path=Title}" />
         </Grid>
 
-        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" >
-            <ItemsControl ItemsSource="{Binding Albums}">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <UniformGrid ClipToBounds="True" Columns="3"/>
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate DataType="{x:Type vms:AlbumVM}">
-                        <Border Background="Gray" BorderBrush="Black" BorderThickness="1" Margin="5" MinHeight="80" MinWidth="150">
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="*"/>
-                                    <RowDefinition Height="Auto"/>
-                                </Grid.RowDefinitions>
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
 
-                                <Image Grid.Row="0" Source="{Binding Thumbnail.Thumbnail}"/>
+            <Grid Grid.Row="0" Margin="5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
 
-                                <TextBlock Grid.Row="1" Text="{Binding Title}"
+                <Button Grid.Column="0" Margin="5" Content="Get" Command="{Binding GetAlbums}"/>
+                <Button Grid.Column="1" Margin="5" Content="Clear" Command="{Binding ClearAlbums}"/>
+
+                <Grid Grid.Column="2" HorizontalAlignment="Right">
+                    <TextBox x:Name="SearchTextBox" VerticalContentAlignment="Center" Text="{Binding AlbumSearch, UpdateSourceTrigger=PropertyChanged}" MinWidth="150" MaxWidth="150" Margin="5"/>
+                    <TextBlock IsHitTestVisible="False" Text="🔍" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,15,0" Foreground="DarkGray">
+                        <TextBlock.Style>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Text, ElementName=SearchTextBox}" Value="">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </Grid>
+            </Grid>
+
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" >
+                <ItemsControl ItemsSource="{Binding Albums}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <UniformGrid ClipToBounds="True" Columns="3"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="{x:Type vms:AlbumVM}">
+                            <Border Background="{DynamicResource ui:DynamicColor.ListMedium}" BorderBrush="Black" BorderThickness="1" Margin="5" MinHeight="80" MinWidth="150">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <Image Grid.Row="0" Source="{Binding Thumbnail.Thumbnail}"/>
+
+                                    <TextBlock Grid.Row="1" Text="{Binding Title}"
                                        VerticalAlignment="Center"
                                        HorizontalAlignment="Center"/>
-                            </Grid>
-                        </Border>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-        </ScrollViewer>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </Grid>
     </Grid>
 </Window>

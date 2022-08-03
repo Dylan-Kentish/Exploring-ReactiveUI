@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
@@ -8,6 +9,7 @@ using System.Windows.Input;
 using DynamicData;
 using DynamicData.Aggregation;
 using DynamicData.Binding;
+using ModernWpf;
 using ReactiveUI;
 using WpfApp.Services;
 
@@ -55,6 +57,23 @@ namespace WpfApp.ViewModels
                 .Bind(out _filteredAlbums)
                 .Subscribe()
                 .DisposeWith(_disposable);
+
+            ChangeTheme = ReactiveCommand.Create(ChangeThemeInternal);
+        }
+
+        private void ChangeThemeInternal()
+        {
+            RxApp.MainThreadScheduler.Schedule(() =>
+            {
+                if (ThemeManager.Current.ActualApplicationTheme == ApplicationTheme.Dark)
+                {
+                    ThemeManager.Current.ApplicationTheme = ApplicationTheme.Light;
+                }
+                else
+                {
+                    ThemeManager.Current.ApplicationTheme = ApplicationTheme.Dark;
+                }
+            });
         }
 
         private async Task GetAlbumsInternal()
@@ -70,6 +89,8 @@ namespace WpfApp.ViewModels
         public ICommand GetAlbums { get; }
 
         public ICommand ClearAlbums { get; }
+
+        public ICommand ChangeTheme { get; }
 
         public ReadOnlyObservableCollection<AlbumVM> Albums => _filteredAlbums;
 
