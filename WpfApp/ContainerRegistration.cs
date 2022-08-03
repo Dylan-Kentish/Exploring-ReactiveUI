@@ -8,7 +8,10 @@ namespace WpfApp
     {
         public static void RegisterTypes(IContainerRegistry containerRegistry)
         {
-            containerRegistry.RegisterSingleton<IAlbumService, DataService>();
+            var dataService = new DataService();
+
+            containerRegistry.RegisterSingleton<IAlbumService>(() => dataService);
+            containerRegistry.RegisterSingleton<IPhotoService>(() => dataService);
             containerRegistry.RegisterSingleton<MainWindowVM>();
         }
     }
