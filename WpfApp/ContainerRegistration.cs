@@ -13,6 +13,7 @@ namespace WpfApp
             containerRegistry.RegisterSingleton<IAlbumService>(() => dataService);
             containerRegistry.RegisterSingleton<IPhotoService>(() => dataService);
             containerRegistry.RegisterSingleton<MainWindowVM>();
+            containerRegistry.RegisterSingleton<ChangeThemeVM>();
         }
     }
 }
