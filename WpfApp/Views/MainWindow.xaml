@@ -6,7 +6,8 @@
         xmlns:ui="http://schemas.modernwpf.com/2019"
         xmlns:vms="clr-namespace:WpfApp.ViewModels"
         xmlns:local="clr-namespace:WpfApp.Views"
-        xmlns:converters="clr-namespace:WpfApp.Converters"
+        xmlns:converters="clr-namespace:WpfApp.Converters" 
+        xmlns:controls="clr-namespace:WpfApp.Controls"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance vms:MainWindowVM}"
         ui:ThemeManager.IsThemeAware="True"
@@ -30,10 +31,13 @@
 
     <Grid>
         <Grid.RowDefinitions>
+            <!--Title Bar-->
             <RowDefinition Height="Auto" />
+            <!--Content-->
             <RowDefinition />
         </Grid.RowDefinitions>
 
+        <!--Title Bar-->
         <Grid
             x:Name="AppTitleBar"
             Background="{DynamicResource SystemControlBackgroundChromeMediumBrush}"
@@ -64,13 +68,11 @@
                     RelativeSource={RelativeSource AncestorType={x:Type Window}}}" />
             </Grid.ColumnDefinitions>
 
-            <ui:TitleBarButton
-                Grid.Column="0"
+            <controls:ChangeThemeButton 
+                Grid.Column="3"
+                HorizontalAlignment="Right"
                 Style="{StaticResource AppTitleBarButtonStyle}"
-                Content="&#xE771;"
-                FontSize="17"
-                ContentTemplate="{x:Null}" 
-                Command="{Binding ChangeTheme}"/>
+                DataContext="{Binding ChangeThemeVM}"/>
 
             <!-- Horizontally centered title -->
             <TextBlock
@@ -82,66 +84,9 @@
                 Text="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}, Path=Title}" />
         </Grid>
 
-        <Grid Grid.Row="1">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
-
-            <Grid Grid.Row="0" Margin="5">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-
-                <Button Grid.Column="0" Margin="5" Content="Get" Command="{Binding GetAlbums}"/>
-                <Button Grid.Column="1" Margin="5" Content="Clear" Command="{Binding ClearAlbums}"/>
-
-                <Grid Grid.Column="2" HorizontalAlignment="Right">
-                    <TextBox x:Name="SearchTextBox" VerticalContentAlignment="Center" Text="{Binding AlbumSearch, UpdateSourceTrigger=PropertyChanged}" MinWidth="150" MaxWidth="150" Margin="5"/>
-                    <TextBlock IsHitTestVisible="False" Text="🔍" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,15,0" Foreground="DarkGray">
-                        <TextBlock.Style>
-                            <Style TargetType="{x:Type TextBlock}">
-                                <Setter Property="Visibility" Value="Collapsed"/>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding Text, ElementName=SearchTextBox}" Value="">
-                                        <Setter Property="Visibility" Value="Visible"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </TextBlock.Style>
-                    </TextBlock>
-                </Grid>
-            </Grid>
-
-            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" >
-                <ItemsControl ItemsSource="{Binding Albums}">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <UniformGrid ClipToBounds="True" Columns="3"/>
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate DataType="{x:Type vms:AlbumVM}">
-                            <Border Background="{DynamicResource ui:DynamicColor.ListMedium}" BorderBrush="Black" BorderThickness="1" Margin="5" MinHeight="80" MinWidth="150">
-                                <Grid>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="*"/>
-                                        <RowDefinition Height="Auto"/>
-                                    </Grid.RowDefinitions>
-
-                                    <Image Grid.Row="0" Source="{Binding Thumbnail.Thumbnail}"/>
-
-                                    <TextBlock Grid.Row="1" Text="{Binding Title}"
-                                       VerticalAlignment="Center"
-                                       HorizontalAlignment="Center"/>
-                                </Grid>
-                            </Border>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </ScrollViewer>
-        </Grid>
+        <!--Content-->
+        <local:Albums 
+            Grid.Row="1"
+            DataContext="{Binding AlbumsVM}"/>
     </Grid>
 </Window>
