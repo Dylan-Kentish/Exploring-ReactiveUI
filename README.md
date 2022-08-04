@@ -4,3 +4,7 @@ This projet was created using [Wpf Prism Template](https://github.com/Dylan-Kent
 
 This project will explore [ReactiveUI.Net](https://www.reactiveui.net/docs/)
 
+I have made use of [ModernWpf by Kinnara](https://github.com/Kinnara/ModernWpf). 
+
+ModernWpf exposes Font icons using [Segoe MDL2 Assets icons](https://docs.microsoft.com/en-gb/windows/apps/design/style/segoe-ui-symbol-font)
+
