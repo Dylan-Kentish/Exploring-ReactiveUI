@@ -3,8 +3,10 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:ui="http://schemas.modernwpf.com/2019"
       xmlns:local="clr-namespace:WpfApp.Views" 
-      xmlns:vms="clr-namespace:WpfApp.ViewModels"
+      xmlns:vms="clr-namespace:WpfApp.ViewModels" 
+      xmlns:controls="clr-namespace:WpfApp.Controls"
       mc:Ignorable="d"
       d:DataContext="{d:DesignInstance vms:AlbumsVM}">
     <Grid.RowDefinitions>
@@ -22,21 +24,12 @@
         <Button Grid.Column="0" Margin="5" Content="Get" Command="{Binding GetAlbums}"/>
         <Button Grid.Column="1" Margin="5" Content="Clear" Command="{Binding ClearAlbums}"/>
 
-        <Grid Grid.Column="2" HorizontalAlignment="Right">
-            <TextBox x:Name="SearchTextBox" VerticalContentAlignment="Center" Text="{Binding AlbumSearch, UpdateSourceTrigger=PropertyChanged}" MinWidth="150" MaxWidth="150" Margin="5"/>
-            <TextBlock IsHitTestVisible="False" Text="🔍" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,15,0" Foreground="DarkGray">
-                <TextBlock.Style>
-                    <Style TargetType="{x:Type TextBlock}">
-                        <Setter Property="Visibility" Value="Collapsed"/>
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding Text, ElementName=SearchTextBox}" Value="">
-                                <Setter Property="Visibility" Value="Visible"/>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </TextBlock.Style>
-            </TextBlock>
-        </Grid>
+        <controls:WatermarkTextBox 
+            Grid.Column="2"
+            HorizontalAlignment="Right"
+            Text="{Binding AlbumSearch, UpdateSourceTrigger=PropertyChanged}"
+            Watermark="Search"
+            Icon="&#xE721;"/>
     </Grid>
 
     <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" >
