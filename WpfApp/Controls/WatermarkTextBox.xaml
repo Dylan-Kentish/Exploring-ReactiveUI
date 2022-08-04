@@ -8,7 +8,7 @@
       xmlns:local="clr-namespace:WpfApp.Controls"
       xmlns:ui="http://schemas.modernwpf.com/2019">
     <TextBox x:Name="SearchTextBox" VerticalContentAlignment="Center" 
-             Text="{Binding Text, UpdateSourceTrigger=PropertyChanged}"
+             Text="{Binding Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:WatermarkTextBox}}}"
              MinWidth="150"
              MaxWidth="150"
              Margin="5"/>

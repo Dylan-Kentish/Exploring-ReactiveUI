@@ -1,13 +1,15 @@
-﻿using System.Windows;
+﻿using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using System.Windows;
 using System.Windows.Controls;
-using ModernWpf.Controls;
+using WpfApp.Annotations;
 
 namespace WpfApp.Controls
 {
     /// <summary>
     /// Interaction logic for WatermarkTextBox.xaml
     /// </summary>
-    public partial class WatermarkTextBox : Grid
+    public partial class WatermarkTextBox : Grid 
     {
         public WatermarkTextBox()
         {
@@ -17,7 +19,10 @@ namespace WpfApp.Controls
         public static readonly DependencyProperty TextProperty = DependencyProperty.Register(
             nameof(Text),
             typeof(string),
-            typeof(WatermarkTextBox));
+            typeof(WatermarkTextBox),
+            new FrameworkPropertyMetadata(
+                string.Empty, 
+                FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
         public static readonly DependencyProperty WatermarkProperty = DependencyProperty.Register(
             nameof(Watermark),
