@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Net.Http;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Text;
@@ -23,18 +24,22 @@ namespace WpfApp.ViewModels
         private readonly IPhotoService _photoService;
         private readonly ObservableCollection<AlbumVM> _allAlbums;
         private readonly ReadOnlyObservableCollection<AlbumVM> _filteredAlbums;
+        private readonly IDialogService _dialogService;
         private string? _albumSearch;
 
-        public AlbumsVM(IAlbumService albumService, IPhotoService photoService)
+        public AlbumsVM(IAlbumService albumService, IPhotoService photoService, IDialogService dialogService)
         {
             _albumService = NotNull(albumService, nameof(albumService));
             _photoService = NotNull(photoService, nameof(photoService));
+            _dialogService = NotNull(dialogService, nameof(dialogService));
 
             _disposable = new CompositeDisposable();
 
             _allAlbums = new ObservableCollection<AlbumVM>();
 
-            GetAlbums = ReactiveCommand.CreateFromTask(GetAlbumsInternal);
+            var reactiveCommand = ReactiveCommand.CreateFromTask(GetAlbumsInternal);
+            reactiveCommand.ThrownExceptions.Subscribe(e => _dialogService.ShowDialog(e.Message));
+            GetAlbums = reactiveCommand;
 
             var observableChangeSet = _allAlbums.ToObservableChangeSet();
 
