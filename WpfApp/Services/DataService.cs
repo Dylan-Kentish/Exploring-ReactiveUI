@@ -29,27 +29,24 @@ public class DataService : IAlbumService, IPhotoService
 
     public async Task<IEnumerable<Album>> GetAlbums()
     {
-        IEnumerable<Album>? albums = null;
-        HttpResponseMessage response = await _client.GetAsync(AlbumsPath);
-        if (response.IsSuccessStatusCode)
-        {
-            albums = await response.Content.ReadFromJsonAsync<IEnumerable<Album>>();
-        }
-
-        return albums ?? Enumerable.Empty<Album>();
+        return await GetAsync<IEnumerable<Album>>(AlbumsPath) ?? Enumerable.Empty<Album>();
     }
 
     public async Task<IEnumerable<Photo>> GetAlbumPhotos(int albumId)
     {
         var photosUrl = PhotosPath.AddQuery(nameof(albumId), albumId.ToString());
-        IEnumerable<Photo>? photos = null;
-        HttpResponseMessage response = await _client.GetAsync(photosUrl);
+        return await GetAsync<IEnumerable<Photo>>(photosUrl) ?? Enumerable.Empty<Photo>();
+    }
+
+    private async Task<T?> GetAsync<T>(string url)
+    {
+        HttpResponseMessage response = await _client.GetAsync(url);
         if (response.IsSuccessStatusCode)
         {
-            photos = await response.Content.ReadFromJsonAsync<IEnumerable<Photo>>();
+            return await response.Content.ReadFromJsonAsync<T>();
         }
 
-        return photos ?? Enumerable.Empty<Photo>();
+        return await Task.FromResult<T?>(default);
     }
 }
 
