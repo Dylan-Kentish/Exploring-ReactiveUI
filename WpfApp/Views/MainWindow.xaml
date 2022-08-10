@@ -39,7 +39,6 @@
 
         <!--Title Bar-->
         <Grid
-            x:Name="AppTitleBar"
             Background="{DynamicResource SystemControlBackgroundChromeMediumBrush}"
             Height="{Binding Path=(ui:TitleBar.Height), RelativeSource={RelativeSource AncestorType={x:Type Window}}}">
 
@@ -47,7 +46,7 @@
                 <Style TargetType="Grid">
                     <Setter Property="TextElement.Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
                     <Style.Triggers>
-                        <DataTrigger Binding="{Binding IsActive, ElementName=Window}" Value="False">
+                        <DataTrigger Binding="{Binding IsActive, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" Value="False">
                             <Setter Property="TextElement.Foreground" Value="{DynamicResource SystemControlDisabledBaseMediumLowBrush}" />
                         </DataTrigger>
                     </Style.Triggers>
@@ -85,8 +84,8 @@
         </Grid>
 
         <!--Content-->
-        <local:Albums 
+        <local:Login 
             Grid.Row="1"
-            DataContext="{Binding AlbumsVM}"/>
+            DataContext="{Binding LoginVM}"/>
     </Grid>
 </Window>

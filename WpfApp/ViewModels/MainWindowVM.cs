@@ -9,17 +9,17 @@ namespace WpfApp.ViewModels
     {
         private readonly CompositeDisposable _disposable = new();
 
-        public MainWindowVM(ChangeThemeVM changeTheme, AlbumsVM albums)
+        public MainWindowVM(ChangeThemeVM changeTheme, LoginVM loginVM)
         {
             ChangeThemeVM = NotNull(changeTheme, nameof(changeTheme));
-            AlbumsVM = NotNull(albums, nameof(albums));
+            LoginVM = NotNull(loginVM, nameof(loginVM));
 
-            _disposable.Add(AlbumsVM);
+            _disposable.Add(loginVM);
         }
 
 
         public ChangeThemeVM ChangeThemeVM { get; }
-        public AlbumsVM AlbumsVM { get; }
+        public LoginVM LoginVM { get; }
 
         public void Dispose()
         {
