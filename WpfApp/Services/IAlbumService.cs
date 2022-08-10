@@ -6,5 +6,5 @@ namespace WpfApp.Services;
 
 public interface IAlbumService
 {
-    Task<IEnumerable<Album>> GetAlbums();
+    Task<IEnumerable<Album>> GetUserAlbums(User user);
 }

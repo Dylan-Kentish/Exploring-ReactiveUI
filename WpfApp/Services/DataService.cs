@@ -28,20 +28,44 @@ public class DataService : IAlbumService, IPhotoService, IUserService
             new MediaTypeWithQualityHeaderValue("application/json"));
     }
 
-    public async Task<IEnumerable<Album>> GetAlbums()
+    public async Task<IEnumerable<Album>> GetUserAlbums(User user)
     {
-        return await GetAsync<IEnumerable<Album>>(AlbumsPath) ?? Enumerable.Empty<Album>();
+        var albumsUrl = AlbumsPath.AddQuery("userId", user.Id.ToString());
+
+        var albums = await GetAsync<IEnumerable<API.Album>>(albumsUrl);
+
+        if (albums is null)
+        {
+            return Enumerable.Empty<Album>();
+        }
+
+        return albums.Select(api => new Album(this, api, user));
     }
 
-    public async Task<IEnumerable<Photo>> GetAlbumPhotos(int albumId)
+    public async Task<IEnumerable<Photo>> GetAlbumPhotos(Album album)
     {
-        var photosUrl = PhotosPath.AddQuery(nameof(albumId), albumId.ToString());
-        return await GetAsync<IEnumerable<Photo>>(photosUrl) ?? Enumerable.Empty<Photo>();
+        var photosUrl = PhotosPath.AddQuery("albumId", album.Id.ToString());
+
+        var photos = await GetAsync<IEnumerable<API.Photo>>(photosUrl);
+
+        if (photos is null)
+        {
+            return Enumerable.Empty<Photo>();
+        }
+
+        return photos.Select(api => new Photo(api, album));
     }
 
     public async Task<IEnumerable<User>> GetUsers()
     {
-        return await GetAsync<IEnumerable<User>>(UsersPath) ?? Enumerable.Empty<User>();
+        var users = await GetAsync<IEnumerable<API.User>>(UsersPath);
+
+        if (users is null)
+        {
+            return Enumerable.Empty<User>();
+        }
+
+        return users.Select(api => new User(this, api));
     }
 
     private async Task<T?> GetAsync<T>(string url)

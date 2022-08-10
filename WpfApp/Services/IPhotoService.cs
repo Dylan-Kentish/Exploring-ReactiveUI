@@ -6,5 +6,5 @@ namespace WpfApp.Services;
 
 public interface IPhotoService
 {
-    Task<IEnumerable<Photo>> GetAlbumPhotos(int albumId);
+    Task<IEnumerable<Photo>> GetAlbumPhotos(Album album);
 }
