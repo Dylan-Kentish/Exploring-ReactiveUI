@@ -11,9 +11,10 @@ using WpfApp.Model;
 
 namespace WpfApp.Services;
 
-public class DataService : IAlbumService, IPhotoService
+public class DataService : IAlbumService, IPhotoService, IUserService
 {
     private const string UriString = "https://jsonplaceholder.typicode.com/";
+    private const string UsersPath = UriString + "users";
     private const string AlbumsPath = UriString + "albums";
     private const string PhotosPath = UriString + "photos";
 
@@ -36,6 +37,11 @@ public class DataService : IAlbumService, IPhotoService
     {
         var photosUrl = PhotosPath.AddQuery(nameof(albumId), albumId.ToString());
         return await GetAsync<IEnumerable<Photo>>(photosUrl) ?? Enumerable.Empty<Photo>();
+    }
+
+    public async Task<IEnumerable<User>> GetUsers()
+    {
+        return await GetAsync<IEnumerable<User>>(UsersPath) ?? Enumerable.Empty<User>();
     }
 
     private async Task<T?> GetAsync<T>(string url)
