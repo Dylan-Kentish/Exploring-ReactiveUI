@@ -10,6 +10,7 @@ namespace WpfApp
         {
             var dataService = new DataService();
 
+            containerRegistry.RegisterSingleton<IUserService>(() => dataService);
             containerRegistry.RegisterSingleton<IAlbumService>(() => dataService);
             containerRegistry.RegisterSingleton<IPhotoService>(() => dataService);
             containerRegistry.RegisterSingleton<IDialogService, DialogService>();
