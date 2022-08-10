@@ -21,6 +21,7 @@ namespace WpfApp.ViewModels
             Thumbnail = new PhotoVM(_photos.First());
         }
 
+        public int UserId => _model.UserId;
         public string Title => _model.Title;
         public PhotoVM Thumbnail { get; } 
     }
