@@ -1,69 +1,116 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Net.Http;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using DynamicData;
 using DynamicData.Aggregation;
 using DynamicData.Binding;
 using ReactiveUI;
+using ReactiveUI.Validation.Abstractions;
+using ReactiveUI.Validation.Contexts;
+using ReactiveUI.Validation.Extensions;
 using WpfApp.Services;
 using static Microsoft.Requires;
 
 namespace WpfApp.ViewModels
 {
-    public sealed class AlbumsVM : ReactiveObject, IDisposable
+    public sealed class AlbumsVM : ReactiveObject, IDisposable, IValidatableViewModel
     {
         private readonly CompositeDisposable _disposable;
+        private readonly IUserService _userService;
         private readonly IAlbumService _albumService;
         private readonly IPhotoService _photoService;
         private readonly ObservableCollection<AlbumVM> _allAlbums;
+        private readonly ObservableCollection<UserVM> _allUsers;
+        private readonly ReadOnlyObservableCollection<UserVM> _filteredUsers;
         private readonly ReadOnlyObservableCollection<AlbumVM> _filteredAlbums;
-        private readonly IDialogService _dialogService;
         private string? _albumSearch;
+        private string? _userSearch;
 
-        public AlbumsVM(IAlbumService albumService, IPhotoService photoService, IDialogService dialogService)
+        public AlbumsVM(
+            IAlbumService albumService,
+            IPhotoService photoService,
+            IDialogService dialogService,
+            IUserService userService)
         {
+            ValidationContext = new ValidationContext();
+
             _albumService = NotNull(albumService, nameof(albumService));
             _photoService = NotNull(photoService, nameof(photoService));
-            _dialogService = NotNull(dialogService, nameof(dialogService));
+            _userService = NotNull(userService, nameof(userService));
+            _ = NotNull(dialogService, nameof(dialogService));
 
             _disposable = new CompositeDisposable();
+
+            _allUsers = new ObservableCollection<UserVM>();
+
+            var allUsersOCS = _allUsers.ToObservableChangeSet();
+
+            var userSearch = this.WhenAnyValue(x => x.UserSearch)
+                .Throttle(TimeSpan.FromSeconds(0.5), RxApp.TaskpoolScheduler)
+                .Select(query => query?.Trim())
+                .DistinctUntilChanged();
+
+            var userFilter = userSearch
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .Select(MakeUserFilter);
+
+            var usersCache = allUsersOCS
+                .Filter(userFilter)
+                .AsObservableList();
+
+            _ = usersCache.DisposeWith(_disposable);
+
+            _ = usersCache
+                .Connect()
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .Bind(out _filteredUsers)
+                .Subscribe()
+                .DisposeWith(_disposable);
 
             _allAlbums = new ObservableCollection<AlbumVM>();
 
             var reactiveCommand = ReactiveCommand.CreateFromTask(GetAlbumsInternal);
-            reactiveCommand.ThrownExceptions.Subscribe(e => _dialogService.ShowDialog(e.Message));
+            reactiveCommand.ThrownExceptions.Subscribe(e => dialogService.ShowDialog(e.Message));
             GetAlbums = reactiveCommand;
 
-            var observableChangeSet = _allAlbums.ToObservableChangeSet();
+            var allAlbumsOCS = _allAlbums.ToObservableChangeSet();
 
-            ClearAlbums = ReactiveCommand.Create(_allAlbums.Clear, observableChangeSet.IsNotEmpty());
+            ClearAlbums = ReactiveCommand.Create(_allAlbums.Clear, allAlbumsOCS.IsNotEmpty());
 
-            var observableFilter = this.WhenAnyValue(x => x.AlbumSearch)
+            var albumSearchFilter = this.WhenAnyValue(x => x.AlbumSearch)
                 .Throttle(TimeSpan.FromSeconds(0.5), RxApp.TaskpoolScheduler)
                 .Select(query => query?.Trim())
                 .DistinctUntilChanged()
                 .ObserveOn(RxApp.MainThreadScheduler)
-                .Select(MakeFilter);
+                .Select(MakeAlbumFilter);
 
-            var myDerivedCache = observableChangeSet
-                .Filter(observableFilter)
+            var userSearchFilter = userSearch
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .Select(MakeUserSearchFilter);
+
+            var userAlbumsOL = allAlbumsOCS
+                .Filter(userSearchFilter)
                 .AsObservableList();
 
-            _ = myDerivedCache.DisposeWith(_disposable);
+            _ = userAlbumsOL.DisposeWith(_disposable);
 
-            _ = myDerivedCache
+            var albumsOL = userAlbumsOL
+                .Connect()
+                .Filter(albumSearchFilter)
+                .AsObservableList();
+
+            _ = albumsOL
                 .Connect()
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .Bind(out _filteredAlbums)
                 .Subscribe()
                 .DisposeWith(_disposable);
+
+            Observable.StartAsync(GetUsersInternal);
         }
 
         private async Task GetAlbumsInternal()
@@ -76,9 +123,22 @@ namespace WpfApp.ViewModels
             }
         }
 
+        private async Task GetUsersInternal()
+        {
+            var users = await _userService.GetUsers();
+            foreach (var user in users)
+            {
+                _allUsers.Add(new UserVM(user));
+            }
+        }
+
+        public ValidationContext ValidationContext { get; }
+
         public ICommand GetAlbums { get; }
 
         public ICommand ClearAlbums { get; }
+
+        public ReadOnlyObservableCollection<UserVM> Users => _filteredUsers;
 
         public ReadOnlyObservableCollection<AlbumVM> Albums => _filteredAlbums;
 
@@ -88,9 +148,32 @@ namespace WpfApp.ViewModels
             set => this.RaiseAndSetIfChanged(ref _albumSearch, value);
         }
 
-        private static Func<AlbumVM, bool> MakeFilter(string? filter)
+        public string? UserSearch
         {
-            return album => string.IsNullOrWhiteSpace(filter) || album.Title.Contains(filter);
+            get => _userSearch;
+            set => this.RaiseAndSetIfChanged(ref _userSearch, value);
+        }
+
+        private bool TryGetUser(string? search, out UserVM? user)
+        {
+            user = _allUsers.FirstOrDefault(u => !string.IsNullOrWhiteSpace(search) && u.Username.Contains(search, StringComparison.InvariantCultureIgnoreCase));
+
+            return user != null;
+        }
+        
+        private Func<AlbumVM, bool> MakeUserSearchFilter(string? filter)
+        {
+            return album => TryGetUser(filter, out UserVM? user) && album.UserId == user.Id;
+        }
+
+        private static Func<AlbumVM, bool> MakeAlbumFilter(string? filter)
+        {
+            return album => string.IsNullOrWhiteSpace(filter) || album.Title.Contains(filter, StringComparison.InvariantCultureIgnoreCase);
+        }
+
+        private static Func<UserVM, bool> MakeUserFilter(string? filter)
+        {
+            return user => !string.IsNullOrWhiteSpace(filter) && user.Username.Contains(filter, StringComparison.InvariantCultureIgnoreCase);
         }
 
         public void Dispose()

@@ -4,7 +4,6 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:ui="http://schemas.modernwpf.com/2019"
-      xmlns:local="clr-namespace:WpfApp.Views" 
       xmlns:vms="clr-namespace:WpfApp.ViewModels" 
       xmlns:controls="clr-namespace:WpfApp.Controls"
       mc:Ignorable="d"
@@ -24,12 +23,24 @@
         <Button Grid.Column="0" Margin="5" Content="Get" Command="{Binding GetAlbums}"/>
         <Button Grid.Column="1" Margin="5" Content="Clear" Command="{Binding ClearAlbums}"/>
 
-        <controls:WatermarkTextBox 
+        <StackPanel 
             Grid.Column="2"
             HorizontalAlignment="Right"
-            Text="{Binding AlbumSearch, UpdateSourceTrigger=PropertyChanged}"
-            Watermark="Search"
-            Icon="&#xE721;"/>
+            Orientation="Horizontal">
+            <ui:AutoSuggestBox
+                Width="150"
+                MaxSuggestionListHeight="200"
+                VerticalAlignment="Center"
+                PlaceholderText="User"
+                Text="{Binding UserSearch, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                ItemsSource="{Binding Users}"
+                ui:ValidationHelper.IsTemplateValidationAdornerSite="True"/>
+
+            <controls:WatermarkTextBox 
+                Text="{Binding AlbumSearch, UpdateSourceTrigger=PropertyChanged}"
+                Watermark="Search"
+                Icon="&#xE721;"/>
+        </StackPanel>
     </Grid>
 
     <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" >
