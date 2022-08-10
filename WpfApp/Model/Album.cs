@@ -1,16 +1,29 @@
-﻿namespace WpfApp.Model
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using WpfApp.Services;
+
+namespace WpfApp.Model
 {
     public class Album
     {
-        public Album(int userId, int id, string title)
+        private readonly IPhotoService _photoService;
+
+        public Album(IPhotoService photoService, API.Album album, User user)
         {
-            UserId = userId;
-            Id = id;
-            Title = title;
+            User = user;
+            _photoService = photoService;
+            Id = album.Id;
+            Title = album.Title;
         }
 
-        public int UserId { get; }
+        public User User { get; }
         public int Id { get; }
         public string Title { get; }
+        public IEnumerable<Photo>? Photos { get; private set; }
+
+        public async Task GetPhotos()
+        {
+            Photos = await _photoService.GetAlbumPhotos(this);
+        }
     }
 }

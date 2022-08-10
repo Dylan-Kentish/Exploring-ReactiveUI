@@ -1,16 +1,30 @@
-﻿namespace WpfApp.Model
+﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
+using System.Threading.Tasks;
+using WpfApp.Services;
+
+namespace WpfApp.Model
 {
     public class User
     {
-        public User(int id, string name, string username)
+        private readonly IAlbumService _albumService;
+
+        public User(IAlbumService albumService, API.User user)
         {
-            Id = id;
-            Name = name;
-            Username = username;
+            _albumService = albumService;
+            Id = user.Id;
+            Name = user.Name;
+            Username = user.Username;
         }
 
         public int Id { get; }
         public string Name { get; }
         public string Username { get; }
+        public IEnumerable<Album>? Albums { get; private set; }
+
+        public async Task GetAlbums()
+        {
+            Albums = await _albumService.GetUserAlbums(this);
+        }
     }
 }
