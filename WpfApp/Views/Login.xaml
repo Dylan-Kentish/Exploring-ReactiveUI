@@ -6,7 +6,9 @@
       xmlns:vms="clr-namespace:WpfApp.ViewModels" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       mc:Ignorable="d"
-      d:DataContext="{d:DesignInstance vms:LoginVM}">
+      d:DataContext="{d:DesignInstance vms:LoginVM}"
+      ui:ValidationHelper.IsTemplateValidationAdornerSite="True">
+
     <Border 
         Background="{DynamicResource ui:DynamicColor.ListMedium}"
         BorderBrush="Black"
@@ -17,15 +19,20 @@
             HorizontalAlignment="Center"
             VerticalAlignment="Center"
             Orientation="Vertical">
-            <Label Content="Login"/>
             <ui:AutoSuggestBox
                 Width="150"
                 MaxSuggestionListHeight="200"
                 VerticalAlignment="Center"
                 PlaceholderText="Username"
                 Text="{Binding Username, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                ItemsSource="{Binding Usernames}"/>
+                ItemsSource="{Binding Usernames}"
+                ui:ValidationHelper.IsTemplateValidationAdornerSite="True">
+            </ui:AutoSuggestBox>
+            <Button 
+                Content="Login" 
+                HorizontalAlignment="Stretch"
+                Margin="0, 5, 0, 0"
+                Command="{Binding Login}"/>
         </StackPanel>
-
     </Border>
 </Grid>

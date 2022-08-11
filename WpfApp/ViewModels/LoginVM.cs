@@ -9,6 +9,7 @@ using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using WpfApp.Services;
 using static Microsoft.Requires;
 
@@ -26,6 +27,12 @@ namespace WpfApp.ViewModels
         {
             _userService = NotNull(userService, nameof(userService));
             _disposable = new CompositeDisposable();
+
+            var usernameValid = this.WhenAnyValue(
+                x => x.Username,
+                UsernameIsValid);
+
+            Login = ReactiveCommand.Create(LoginInternal, usernameValid);
 
             _allUsers = new SourceList<UserVM>();
 
@@ -66,6 +73,8 @@ namespace WpfApp.ViewModels
             set => this.RaiseAndSetIfChanged(ref _username, value);
         }
 
+        public ICommand Login { get; }
+
         public bool UsernameIsValid(string? queryUsername)
         {
             return !string.IsNullOrWhiteSpace(queryUsername) && _allUsers.Items.Any(user => user.Username == queryUsername);
@@ -82,7 +91,12 @@ namespace WpfApp.ViewModels
 
         private static Func<string, bool> MakeUserFilter(string? queryUsername)
         {
-            return username => !string.IsNullOrWhiteSpace(queryUsername) && username.Contains(queryUsername, StringComparison.InvariantCultureIgnoreCase);
+            return username => !string.IsNullOrWhiteSpace(queryUsername) && (username?.Contains(queryUsername, StringComparison.InvariantCultureIgnoreCase) ?? false);
+        }
+        
+        private void LoginInternal()
+        {
+            throw new NotImplementedException();
         }
 
         public void Dispose()
