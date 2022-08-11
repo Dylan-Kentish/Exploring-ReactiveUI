@@ -1,7 +1,10 @@
-﻿namespace WpfApp.API
+﻿using System.Text.Json.Serialization;
+
+namespace WpfApp.API
 {
     public struct Photo
     {
+        [JsonConstructor]
         public Photo(int id, string title, string url, string thumbnailUrl)
         {
             Id = id;
