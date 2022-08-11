@@ -11,33 +11,23 @@ using WpfApp.Model;
 
 namespace WpfApp.Services;
 
-public class DataService : IAlbumService, IPhotoService, IUserService
+public sealed class DataService : IAlbumService, IPhotoService, IUserService
 {
+    private static readonly SocketsHttpHandler HttpClientHandler = new()
+    {
+        PooledConnectionLifetime = TimeSpan.FromMinutes(1),
+    };
+
     private const string UriString = "https://jsonplaceholder.typicode.com/";
     private const string UsersPath = UriString + "users";
     private const string AlbumsPath = UriString + "albums";
     private const string PhotosPath = UriString + "photos";
 
-    private readonly HttpClient _client = new();
-
-    public DataService()
-    {
-        _client.BaseAddress = new Uri(UriString);
-        _client.DefaultRequestHeaders.Accept.Clear();
-        _client.DefaultRequestHeaders.Accept.Add(
-            new MediaTypeWithQualityHeaderValue("application/json"));
-    }
-
     public async Task<IEnumerable<Album>> GetUserAlbums(User user)
     {
         var albumsUrl = AlbumsPath.AddQuery("userId", user.Id.ToString());
 
-        var albums = await GetAsync<IEnumerable<API.Album>>(albumsUrl);
-
-        if (albums is null)
-        {
-            return Enumerable.Empty<Album>();
-        }
+        var albums = await GetAsync<API.Album>(albumsUrl);
 
         return albums.Select(api => new Album(this, api, user));
     }
@@ -46,37 +36,38 @@ public class DataService : IAlbumService, IPhotoService, IUserService
     {
         var photosUrl = PhotosPath.AddQuery("albumId", album.Id.ToString());
 
-        var photos = await GetAsync<IEnumerable<API.Photo>>(photosUrl);
-
-        if (photos is null)
-        {
-            return Enumerable.Empty<Photo>();
-        }
+        var photos = await GetAsync<API.Photo>(photosUrl);
 
         return photos.Select(api => new Photo(api, album));
     }
 
     public async Task<IEnumerable<User>> GetUsers()
     {
-        var users = await GetAsync<IEnumerable<API.User>>(UsersPath);
-
-        if (users is null)
-        {
-            return Enumerable.Empty<User>();
-        }
+        var users = await GetAsync<API.User>(UsersPath);
 
         return users.Select(api => new User(this, api));
     }
 
-    private async Task<T?> GetAsync<T>(string url)
+    private static async Task<IEnumerable<T>> GetAsync<T>(string url)
     {
-        HttpResponseMessage response = await _client.GetAsync(url);
-        if (response.IsSuccessStatusCode)
+        IEnumerable<T>? result = default;
+
+        using (var client = new HttpClient(HttpClientHandler, disposeHandler: false))
         {
-            return await response.Content.ReadFromJsonAsync<T>();
+            client.BaseAddress = new Uri(UriString);
+            client.DefaultRequestHeaders.Accept.Clear();
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            using (var response = await client.GetAsync(url))
+            {
+                if (response.IsSuccessStatusCode)
+                {
+                    result = await response.Content.ReadFromJsonAsync<IEnumerable<T>>() ;
+                }
+            }
         }
 
-        return await Task.FromResult<T?>(default);
+        return result ?? Enumerable.Empty<T>();
     }
 }
 
