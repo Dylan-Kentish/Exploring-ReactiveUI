@@ -8,6 +8,8 @@
         xmlns:local="clr-namespace:WpfApp.Views"
         xmlns:converters="clr-namespace:WpfApp.Converters" 
         xmlns:controls="clr-namespace:WpfApp.Controls"
+        xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:prism="http://prismlibrary.com/"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance vms:MainWindowVM}"
         ui:ThemeManager.IsThemeAware="True"
@@ -84,8 +86,32 @@
         </Grid>
 
         <!--Content-->
-        <local:Login 
-            Grid.Row="1"
-            DataContext="{Binding LoginVM}"/>
+        <ui:NavigationView 
+            Grid.Row="1" 
+            PaneDisplayMode="Left" 
+            IsTabStop="False"
+            IsSettingsVisible="False">
+            <b:Interaction.Triggers>
+                <b:EventTrigger EventName="SelectionChanged">
+                    <prism:InvokeCommandAction 
+                        Command="{Binding ViewSelected}"
+                        TriggerParameterPath="SelectedItem" />
+                </b:EventTrigger>
+            </b:Interaction.Triggers>
+
+            <!--Change to binding-->
+            <ui:NavigationView.MenuItems>
+                <ui:NavigationViewItem Content="Home" Icon="Home" ToolTipService.ToolTip="Home" Tag="HomePage"/>
+                <ui:NavigationViewItem Content="Account" Icon="Contact" ToolTipService.ToolTip="Account" Tag="AccountPage" IsEnabled="False">
+                    <ui:NavigationViewItem.MenuItems>
+                        <ui:NavigationViewItem Content="Details" Icon="Mail" ToolTipService.ToolTip="Mail" Tag="AccountDetailsPage"/>
+                    </ui:NavigationViewItem.MenuItems>
+                </ui:NavigationViewItem>
+                <ui:NavigationViewItem Content="Albums" Icon="Contact" ToolTipService.ToolTip="Albums" Tag="AlbumsPage"/>
+                <ui:NavigationViewItem Content="Posts" Icon="Contact" ToolTipService.ToolTip="Posts" Tag="PostsPage"/>
+            </ui:NavigationView.MenuItems>
+
+            <ui:Frame SourcePageType="{Binding CurrentPage}" />
+        </ui:NavigationView>
     </Grid>
 </Window>
