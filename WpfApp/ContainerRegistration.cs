@@ -22,6 +22,7 @@ namespace WpfApp
             var observableUser = activeUser.WhenAnyValue(au => au.User);
 
             containerRegistry.RegisterSingleton<IDialogService, DialogService>();
+            containerRegistry.RegisterSingleton<INavigationService, NavigationService>();
             containerRegistry.RegisterSingleton<ThemeManager>(() => ThemeManager.Current);
 
             containerRegistry.RegisterSingleton<ActiveUser>(() => activeUser);
