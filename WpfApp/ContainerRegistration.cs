@@ -1,4 +1,8 @@
-﻿using Prism.Ioc;
+﻿using System;
+using ModernWpf;
+using Prism.Ioc;
+using ReactiveUI;
+using WpfApp.Model;
 using WpfApp.Services;
 using WpfApp.ViewModels;
 
@@ -8,14 +12,23 @@ namespace WpfApp
     {
         public static void RegisterTypes(IContainerRegistry containerRegistry)
         {
-            var dataService = new DataService();
+            containerRegistry.RegisterManySingleton<DataService>(
+                typeof(IUserService),
+                typeof(IAlbumService),
+                typeof(IPhotoService));
 
-            containerRegistry.RegisterSingleton<IUserService>(() => dataService);
-            containerRegistry.RegisterSingleton<IAlbumService>(() => dataService);
-            containerRegistry.RegisterSingleton<IPhotoService>(() => dataService);
+            var activeUser = new ActiveUser();
+
+            var observableUser = activeUser.WhenAnyValue(au => au.User);
+
             containerRegistry.RegisterSingleton<IDialogService, DialogService>();
-            containerRegistry.RegisterSingleton<MainWindowVM>();
+            containerRegistry.RegisterSingleton<ThemeManager>(() => ThemeManager.Current);
+
+            containerRegistry.RegisterSingleton<ActiveUser>(() => activeUser);
+            containerRegistry.RegisterSingleton<IObservable<User>>(() => observableUser);
+
             containerRegistry.RegisterSingleton<ChangeThemeVM>();
+            containerRegistry.RegisterSingleton<MainWindowVM>();
         }
     }
 }
