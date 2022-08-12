@@ -7,6 +7,7 @@
         xmlns:vms="clr-namespace:WpfApp.ViewModels"
         xmlns:local="clr-namespace:WpfApp.Views"
         xmlns:converters="clr-namespace:WpfApp.Converters" 
+        xmlns:services="clr-namespace:WpfApp.Services" 
         xmlns:controls="clr-namespace:WpfApp.Controls"
         xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:prism="http://prismlibrary.com/"
@@ -95,20 +96,33 @@
             <ui:NavigationView.Resources>
                 <x:Array x:Key="AccountMenuItems"
                          Type="ui:NavigationViewItem">
-                    <ui:NavigationViewItem Content="Details" Icon="Mail" ToolTipService.ToolTip="Details" Tag="AccountDetailsPage"/>
+                    <ui:NavigationViewItem Content="Details" 
+                                           Icon="Mail" 
+                                           ToolTipService.ToolTip="Details" 
+                                           Tag="{x:Static services:NavigationService.AccountDetails}"/>
                 </x:Array> 
             </ui:NavigationView.Resources>
             <b:Interaction.Triggers>
                 <b:EventTrigger EventName="SelectionChanged">
                     <prism:InvokeCommandAction 
                         Command="{Binding ViewSelected}"
-                        TriggerParameterPath="SelectedItem" />
+                        TriggerParameterPath="SelectedItem.Tag" />
                 </b:EventTrigger>
             </b:Interaction.Triggers>
 
             <ui:NavigationView.MenuItems>
-                <ui:NavigationViewItem Content="Home" Icon="Home" ToolTipService.ToolTip="Home" Tag="HomePage"/>
-                <ui:NavigationViewItem Content="Account" Icon="Contact" ToolTipService.ToolTip="Account" Tag="AccountPage">
+                <ui:NavigationViewItem 
+                    Content="Home"
+                    Icon="Home" 
+                    ToolTipService.ToolTip="Home"
+                    Tag="{x:Static services:NavigationService.Home}"/>
+
+                <ui:NavigationViewItem 
+                    Content="Account"
+                    Icon="Contact" 
+                    ToolTipService.ToolTip="Account"
+                    Tag="{x:Static services:NavigationService.Account}">
+
                     <ui:NavigationViewItem.Style>
                         <Style TargetType="{x:Type ui:NavigationViewItem}">
                             <Style.Triggers>
@@ -119,8 +133,18 @@
                         </Style>
                     </ui:NavigationViewItem.Style>
                 </ui:NavigationViewItem>
-                <ui:NavigationViewItem Content="Albums" Icon="Contact" ToolTipService.ToolTip="Albums" Tag="AlbumsPage"/>
-                <ui:NavigationViewItem Content="Posts" Icon="Contact" ToolTipService.ToolTip="Posts" Tag="PostsPage"/>
+
+                <ui:NavigationViewItem 
+                    Content="Albums"
+                    Icon="Contact" 
+                    ToolTipService.ToolTip="Albums" 
+                    Tag="{x:Static services:NavigationService.Albums}"/>
+
+                <ui:NavigationViewItem 
+                    Content="Posts" 
+                    Icon="Contact" 
+                    ToolTipService.ToolTip="Posts"
+                    Tag="{x:Static services:NavigationService.Posts}"/>
             </ui:NavigationView.MenuItems>
 
             <ui:Frame SourcePageType="{Binding CurrentPage}" />
