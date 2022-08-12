@@ -10,6 +10,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using WpfApp.Model;
 using WpfApp.Services;
 using static Microsoft.Requires;
 
@@ -17,14 +18,16 @@ namespace WpfApp.ViewModels
 {
     public sealed class LoginVM : ReactiveValidationObject, IDisposable
     {
+        private readonly ActiveUser _activeUser;
         private readonly ReadOnlyObservableCollection<string> _usernames;
         private readonly IUserService _userService;
         private readonly CompositeDisposable _disposable;
-        private readonly SourceList<UserVM> _allUsers;
+        private readonly SourceList<User> _allUsers;
         private string? _username;
 
-        public LoginVM(IUserService userService)
+        public LoginVM(IUserService userService, ActiveUser activeUser)
         {
+            _activeUser = activeUser;
             _userService = NotNull(userService, nameof(userService));
             _disposable = new CompositeDisposable();
 
@@ -34,7 +37,7 @@ namespace WpfApp.ViewModels
 
             Login = ReactiveCommand.Create(LoginInternal, usernameValid);
 
-            _allUsers = new SourceList<UserVM>();
+            _allUsers = new SourceList<User>();
 
             var userFilter = this.WhenAnyValue(x => x.Username)
                 .Select(query => query?.Trim())
@@ -85,7 +88,7 @@ namespace WpfApp.ViewModels
             var users = await _userService.GetUsers();
             foreach (var user in users)
             {
-                _allUsers.Add(new UserVM(user));
+                _allUsers.Add(user);
             }
         }
 
@@ -96,7 +99,7 @@ namespace WpfApp.ViewModels
         
         private void LoginInternal()
         {
-            throw new NotImplementedException();
+            _activeUser.User = _allUsers.Items.First(user => user.Username == Username);
         }
 
         public void Dispose()
