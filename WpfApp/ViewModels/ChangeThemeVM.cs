@@ -7,26 +7,21 @@ namespace WpfApp.ViewModels
 {
     public class ChangeThemeVM
     {
-        public ChangeThemeVM()
+        private readonly ThemeManager _themeManager;
+
+        public ChangeThemeVM(ThemeManager themeManager)
         {
+            _themeManager = themeManager;
             ChangeTheme = ReactiveCommand.Create(ChangeThemeInternal);
         }
 
         public ICommand ChangeTheme { get; }
 
-        private static void ChangeThemeInternal()
-        {
+        private void ChangeThemeInternal() =>
             RxApp.MainThreadScheduler.Schedule(() =>
-            {
-                if (ThemeManager.Current.ActualApplicationTheme == ApplicationTheme.Dark)
-                {
-                    ThemeManager.Current.ApplicationTheme = ApplicationTheme.Light;
-                }
-                else
-                {
-                    ThemeManager.Current.ApplicationTheme = ApplicationTheme.Dark;
-                }
-            });
-        }
+                _themeManager.ApplicationTheme = 
+                    _themeManager.ActualApplicationTheme == ApplicationTheme.Dark ?
+                    ApplicationTheme.Light :
+                    ApplicationTheme.Dark);
     }
 }
