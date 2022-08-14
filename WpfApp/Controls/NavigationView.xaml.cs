@@ -1,6 +1,7 @@
 ﻿using ModernWpf.Controls;
 using System.Windows;
 using System.Linq;
+using WpfApp.Services;
 
 namespace WpfApp.Controls
 {
@@ -10,7 +11,7 @@ namespace WpfApp.Controls
     public partial class NavigationView : ModernWpf.Controls.NavigationView
     {
         public static readonly DependencyProperty SelectedTagProperty =
-            DependencyProperty.Register("SelectedTag", typeof(string), typeof(NavigationView), new PropertyMetadata(default));
+            DependencyProperty.Register("SelectedTag", typeof(string), typeof(NavigationView), new PropertyMetadata(NavigationService.Home));
 
         public NavigationView()
         {
@@ -37,10 +38,17 @@ namespace WpfApp.Controls
             }
             {
                 if (e.Property == SelectedTagProperty &&
-                    e.NewValue is string tag)
+                    e.NewValue is string tag &&
+                    MenuItemsSource is NavigationViewItem[] items)
                 {
-                    var navItems = MenuItems.Cast<NavigationViewItem>();
-                    SelectedItem = navItems.FirstOrDefault(item => item.Tag is string other && other == tag);
+                    SelectedItem = items.FirstOrDefault(item => item.Tag is string other && other == tag);
+                }
+            }
+            {
+                if (e.Property == MenuItemsSourceProperty &&
+                    MenuItemsSource is NavigationViewItem[] items)
+                {
+                    SelectedItem = items.FirstOrDefault(item => item.Tag is string other && other == SelectedTag);
                 }
             }
         }
