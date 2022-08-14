@@ -9,19 +9,17 @@ namespace WpfApp.Services
 {
     public sealed class NavigationService : ReactiveObject, INavigationService, IDisposable
     {
-        internal const string VMsNamespace = "WpfApp.ViewModels.";
-        internal const string Page = nameof(Page);
-        internal const string Login = nameof(Login);
-
         public const string MainRegion = nameof(MainRegion);
 
         public const string Home = nameof(Home);
+        public const string Login = nameof(Login);
         public const string Account = nameof(Account);
         public const string AccountDetails = nameof(AccountDetails);
         public const string Albums = nameof(Albums);
         public const string Album = nameof(Album);
         public const string Posts = nameof(Posts);
         public const string Post = nameof(Post);
+
         private readonly IRegionManager _regionManager;
         private readonly CompositeDisposable _disposable;
         private bool _canGoBack;
