@@ -19,11 +19,10 @@ namespace WpfApp.Model
         public User User { get; }
         public int Id { get; }
         public string Title { get; }
-        public IEnumerable<Photo>? Photos { get; private set; }
 
-        public async Task GetPhotos()
+        public async Task<IEnumerable<Photo>> GetPhotos()
         {
-            Photos = await _photoService.GetAlbumPhotos(this);
+            return await _photoService.GetAlbumPhotos(this);
         }
     }
 }
