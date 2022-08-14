@@ -6,10 +6,14 @@ namespace WpfApp.Services
     {
         bool CanGoBack { get; }
 
+        bool CanGoForward { get; }
+
         string CurrentView { get; set; }
 
         void NavigateTo(string? tag);
 
         void GoBack();
+
+        void GoForward();
     }
 }

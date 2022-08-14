@@ -23,6 +23,7 @@ namespace WpfApp.Services
         private readonly IRegionManager _regionManager;
         private readonly CompositeDisposable _disposable;
         private bool _canGoBack;
+        private bool _canGoForward;
         private IRegion? _mainRegion;
         private IRegionNavigationJournal? _journal;
         private User? _activeUser;
@@ -44,6 +45,12 @@ namespace WpfApp.Services
         {
             get => _canGoBack;
             private set => this.RaiseAndSetIfChanged(ref _canGoBack, value);
+        }
+
+        public bool CanGoForward
+        {
+            get => _canGoForward;
+            private set => this.RaiseAndSetIfChanged(ref _canGoForward, value);
         }
 
         public string CurrentView
@@ -76,6 +83,12 @@ namespace WpfApp.Services
             UpdateCanGoBack();
         }
 
+        public void GoForward()
+        {
+            _journal?.GoForward();
+            UpdateCanGoForward();
+        }
+
         private void ActiveUserChanged(User? user)
         {
             _activeUser = user;
@@ -105,12 +118,18 @@ namespace WpfApp.Services
         private void OnNavigation(NavigationResult e)
         {
             UpdateCanGoBack();
+            UpdateCanGoForward();
             UpdateCurrentView(e.Context);
         }
 
         private void UpdateCanGoBack()
         {
             CanGoBack = _journal?.CanGoBack ?? false;
+        }
+
+        private void UpdateCanGoForward()
+        {
+            CanGoForward = _journal?.CanGoForward ?? false;
         }
 
         private void UpdateCurrentView(NavigationContext e)
