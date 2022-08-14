@@ -37,8 +37,6 @@ namespace WpfApp.Services
             activeUser
                 .Subscribe(ActiveUserChanged)
                 .DisposeWith(_disposable);
-
-            NavigateTo(Home);
         }
 
         public bool CanGoBack
