@@ -1,5 +1,6 @@
 ﻿using DynamicData;
 using DynamicData.Binding;
+using Prism.Regions;
 using ReactiveUI;
 using ReactiveUI.Validation.Extensions;
 using ReactiveUI.Validation.Helpers;
@@ -16,8 +17,9 @@ using static Microsoft.Requires;
 
 namespace WpfApp.ViewModels
 {
-    public sealed class LoginVM : ReactiveValidationObject, IDisposable
+    public sealed class LoginVM : ReactiveValidationObject, IDisposable, IJournalAware
     {
+        private readonly INavigationService _navigationService;
         private readonly ActiveUser _activeUser;
         private readonly ReadOnlyObservableCollection<string> _usernames;
         private readonly IUserService _userService;
@@ -25,8 +27,12 @@ namespace WpfApp.ViewModels
         private readonly SourceList<User> _allUsers;
         private string? _username;
 
-        public LoginVM(IUserService userService, ActiveUser activeUser)
+        public LoginVM(
+            INavigationService navigationService,
+            IUserService userService, 
+            ActiveUser activeUser)
         {
+            this._navigationService = navigationService;
             _activeUser = activeUser;
             _userService = NotNull(userService, nameof(userService));
             _disposable = new CompositeDisposable();
@@ -83,6 +89,8 @@ namespace WpfApp.ViewModels
             return !string.IsNullOrWhiteSpace(queryUsername) && _allUsers.Items.Any(user => user.Username == queryUsername);
         }
 
+        public bool PersistInHistory() => false;
+
         private async Task GetUsersInternal()
         {
             var users = await _userService.GetUsers();
@@ -100,6 +108,7 @@ namespace WpfApp.ViewModels
         private void LoginInternal()
         {
             _activeUser.User = _allUsers.Items.First(user => user.Username == Username);
+            _navigationService.NavigateTo(NavigationService.Account);
         }
 
         public void Dispose()
