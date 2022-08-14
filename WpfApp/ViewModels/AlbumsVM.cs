@@ -7,18 +7,23 @@ using System.Reactive.Linq;
 using WpfApp.Model;
 using System.Linq;
 using DynamicData;
+using WpfApp.Services;
 
 namespace WpfApp.ViewModels
 {
     public sealed class AlbumsVM : ReactiveValidationObject, IDisposable
     {
         private readonly CompositeDisposable _disposables;
+        private readonly INavigationService _navigationService;
         private ReadOnlyObservableCollection<AlbumVM>? _albums;
         private string? _albumSearch;
 
-        public AlbumsVM(IObservable<User?> user)
+        public AlbumsVM(
+            INavigationService navigationService,
+            IObservable<User?> user)
         {
             _disposables = new CompositeDisposable();
+            _navigationService = navigationService;
 
             user.WhereNotNull()
                 .Subscribe(async user =>
@@ -33,16 +38,10 @@ namespace WpfApp.ViewModels
                     .ObserveOn(RxApp.MainThreadScheduler)
                     .Select(MakeAlbumFilter);
 
-                var albumsCache = albums
+                albums
                     .Connect()
                     .Filter(albumSearchFilter)
-                    .AsObservableCache();
-
-                albumsCache.DisposeWith(_disposables);
-
-                albumsCache
-                    .Connect()
-                    .Transform(x => new AlbumVM(x))
+                    .Transform(x => new AlbumVM(_navigationService, x))
                     .ObserveOn(RxApp.MainThreadScheduler)
                     .Bind(out _albums)
                     .Subscribe(a => this.RaisePropertyChanged(nameof(Albums)))
