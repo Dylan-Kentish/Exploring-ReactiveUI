@@ -42,7 +42,7 @@ namespace WpfApp.ViewModels
                 .DisposeWith(_disposable);
 
             this.WhenAnyValue(x => x.SelectedTag)
-                .Subscribe(_navigationService.NavigateTo)
+                .Subscribe(tag => _navigationService.NavigateTo(tag))
                 .DisposeWith(_disposable);
 
             _navigationService.WhenAnyValue(x => x.CurrentView)
