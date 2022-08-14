@@ -59,8 +59,10 @@ namespace WpfApp.Services
             {
                 _mainRegion.RequestNavigate(Login);
             }
-
-            _mainRegion.RequestNavigate(tag, _ => UpdateCanGoBack());
+            else
+            {
+                _mainRegion.RequestNavigate(tag, _ => UpdateCanGoBack());
+            }
         }
 
         public void GoBack()
