@@ -4,8 +4,10 @@ namespace WpfApp.Services
 {
     public interface INavigationService
     {
-        void NavigateTo(string tag);
+        bool CanGoBack { get; }
 
-        Type? CurrentPage { get; }
+        void NavigateTo(string? tag);
+
+        void GoBack();
     }
 }
