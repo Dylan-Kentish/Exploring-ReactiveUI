@@ -35,7 +35,8 @@ namespace WpfApp
             containerRegistry.RegisterSingleton<MainWindowVM>();
 
             containerRegistry.RegisterForNavigation<HomePage>(NavigationService.Home);
-            containerRegistry.RegisterForNavigation<LoginPage>(NavigationService.Login);
+            containerRegistry.RegisterForNavigation<LoginPage, LoginVM>(NavigationService.Login);
+            containerRegistry.RegisterForNavigation<AccountPage, AccountVM>(NavigationService.Account);
         }
     }
 }
