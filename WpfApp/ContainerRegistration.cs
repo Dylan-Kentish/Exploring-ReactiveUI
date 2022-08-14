@@ -23,7 +23,10 @@ namespace WpfApp
 
             var observableUser = activeUser.WhenAnyValue(au => au.User);
 
-            containerRegistry.RegisterSingleton<IRegionManager, RegionManager>();
+            var regionManager = new RegionManager();
+            regionManager.RegisterViewWithRegion<HomePage>(NavigationService.MainRegion);
+
+            containerRegistry.RegisterSingleton<IRegionManager>(() => regionManager);
             containerRegistry.RegisterSingleton<IDialogService, DialogService>();
             containerRegistry.RegisterSingleton<INavigationService, NavigationService>();
             containerRegistry.RegisterSingleton<ThemeManager>(() => ThemeManager.Current);
