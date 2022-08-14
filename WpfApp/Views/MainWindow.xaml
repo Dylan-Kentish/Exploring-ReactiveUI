@@ -68,13 +68,13 @@
 
             <ui:NavigationViewItem 
                     Content="Albums"
-                    Icon="Contact" 
+                    Icon="Camera" 
                     ToolTipService.ToolTip="Albums" 
                     Tag="{x:Static services:NavigationService.Albums}"/>
 
             <ui:NavigationViewItem 
                     Content="Posts" 
-                    Icon="Contact" 
+                    Icon="ReadingList" 
                     ToolTipService.ToolTip="Posts"
                     Tag="{x:Static services:NavigationService.Posts}"/>
         </x:Array>
@@ -118,6 +118,12 @@
                     RelativeSource={RelativeSource AncestorType={x:Type Window}}}" />
             </Grid.ColumnDefinitions>
 
+            <ui:TitleBarButton
+                Grid.Column="1"
+                Style="{StaticResource AppTitleBarBackButtonStyle}"
+                Content="&#xEA47;"
+                Command="{Binding ForwardRequested}"/>
+            
             <controls:ChangeThemeButton 
                 Grid.Column="3"
                 HorizontalAlignment="Right"

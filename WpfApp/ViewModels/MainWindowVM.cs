@@ -29,7 +29,12 @@ namespace WpfApp.ViewModels
             var cgbObservable = _navigationService
                 .WhenAnyValue(x => x.CanGoBack);
 
+            var cgfObservable = _navigationService
+                .WhenAnyValue(x => x.CanGoForward);
+
             BackRequested = ReactiveCommand.Create(_navigationService.GoBack, cgbObservable);
+
+            ForwardRequested = ReactiveCommand.Create(_navigationService.GoForward, cgfObservable);
 
             currentUser
                 .Select(user => user != null)
@@ -46,6 +51,8 @@ namespace WpfApp.ViewModels
         }
 
         public ICommand BackRequested { get; }
+
+        public ICommand ForwardRequested { get; }
 
         public ChangeThemeVM ChangeThemeVM { get; }
 
