@@ -19,11 +19,10 @@ namespace WpfApp.Model
         public int Id { get; }
         public string Name { get; }
         public string Username { get; }
-        public IEnumerable<Album>? Albums { get; private set; }
 
-        public async Task GetAlbums()
+        public Task<IEnumerable<Album>> GetAlbums()
         {
-            Albums = await _albumService.GetUserAlbums(this);
+            return _albumService.GetUserAlbums(this);
         }
     }
 }
