@@ -68,15 +68,17 @@
 
             <ui:NavigationViewItem 
                     Content="Albums"
-                    Icon="Camera" 
+                    Icon="BrowsePhotos" 
                     ToolTipService.ToolTip="Albums" 
-                    Tag="{x:Static services:NavigationService.Albums}"/>
+                    Tag="{x:Static services:NavigationService.Albums}"
+                    IsEnabled="{Binding UserLoggedIn}"/>
 
             <ui:NavigationViewItem 
                     Content="Posts" 
-                    Icon="ReadingList" 
+                    Icon="Message" 
                     ToolTipService.ToolTip="Posts"
-                    Tag="{x:Static services:NavigationService.Posts}"/>
+                    Tag="{x:Static services:NavigationService.Posts}"
+                    IsEnabled="{Binding UserLoggedIn}"/>
         </x:Array>
     </Window.Resources>
 
