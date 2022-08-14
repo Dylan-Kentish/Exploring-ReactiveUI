@@ -40,6 +40,7 @@ namespace WpfApp
             containerRegistry.RegisterForNavigation<HomePage>(NavigationService.Home);
             containerRegistry.RegisterForNavigation<LoginPage, LoginVM>(NavigationService.Login);
             containerRegistry.RegisterForNavigation<AccountPage, AccountVM>(NavigationService.Account);
+            containerRegistry.RegisterForNavigation<AlbumsPage, AlbumsVM>(NavigationService.Albums);
         }
     }
 }
