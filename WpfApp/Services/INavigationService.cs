@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace WpfApp.Services
 {
@@ -10,7 +11,7 @@ namespace WpfApp.Services
 
         string CurrentView { get; set; }
 
-        void NavigateTo(string? tag);
+        void NavigateTo(string? tag, Dictionary<string, object>? parameters = null);
 
         void GoBack();
 

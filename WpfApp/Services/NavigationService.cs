@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reactive.Disposables;
 using Prism.Ioc;
 using Prism.Regions;
@@ -74,6 +75,34 @@ namespace WpfApp.Services
             else
             {
                 _mainRegion.RequestNavigate(tag, OnNavigation);
+            }
+        }
+
+        public void NavigateTo(string? tag, Dictionary<string, object>? parameters = null)
+        {
+            if (_mainRegion is null &&
+                !GetMainRegion())
+            {
+                return;
+            }
+
+            var navigationParameters = new NavigationParameters();
+            if (parameters is not null)
+            {
+                foreach (var item in parameters)
+                {
+                    navigationParameters.Add(item.Key, item.Value);
+                }
+            }
+
+
+            if (_activeUser is null && (tag == Account || tag == AccountDetails))
+            {
+                _mainRegion.RequestNavigate(Login, navigationParameters);
+            }
+            else
+            {
+                _mainRegion.RequestNavigate(tag, OnNavigation, navigationParameters);
             }
         }
 
