@@ -6,6 +6,8 @@ namespace WpfApp.Services
     {
         bool CanGoBack { get; }
 
+        string CurrentView { get; set; }
+
         void NavigateTo(string? tag);
 
         void GoBack();

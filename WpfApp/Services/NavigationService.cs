@@ -26,6 +26,7 @@ namespace WpfApp.Services
         private IRegion? _mainRegion;
         private IRegionNavigationJournal? _journal;
         private User? _activeUser;
+        private string? _currentView;
 
         public NavigationService(
             IRegionManager regionManager, 
@@ -45,6 +46,12 @@ namespace WpfApp.Services
             private set => this.RaiseAndSetIfChanged(ref _canGoBack, value);
         }
 
+        public string CurrentView
+        {
+            get => _currentView;
+            set => this.RaiseAndSetIfChanged(ref _currentView, value);
+        }
+
         public void NavigateTo(string? tag)
         {
             if (_mainRegion is null &&
@@ -59,7 +66,7 @@ namespace WpfApp.Services
             }
             else
             {
-                _mainRegion.RequestNavigate(tag, _ => UpdateCanGoBack());
+                _mainRegion.RequestNavigate(tag, OnNavigation);
             }
         }
 
@@ -81,6 +88,7 @@ namespace WpfApp.Services
                 if (_regionManager.Regions.ContainsRegionWithName(MainRegion))
                 {
                     _mainRegion = _regionManager.Regions[MainRegion];
+                    _mainRegion.NavigationService.Navigated += NavigationService_Navigated;
 
                     _journal = _mainRegion.NavigationService.Journal;
                 }
@@ -89,9 +97,25 @@ namespace WpfApp.Services
             return _mainRegion != null;
         }
 
+        private void NavigationService_Navigated(object? sender, RegionNavigationEventArgs e)
+        {
+            UpdateCurrentView(e.NavigationContext);
+        }
+
+        private void OnNavigation(NavigationResult e)
+        {
+            UpdateCanGoBack();
+            UpdateCurrentView(e.Context);
+        }
+
         private void UpdateCanGoBack()
         {
             CanGoBack = _journal?.CanGoBack ?? false;
+        }
+
+        private void UpdateCurrentView(NavigationContext e)
+        {
+            CurrentView = e.Uri.OriginalString;
         }
 
         public void Dispose()
