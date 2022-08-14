@@ -1,10 +1,12 @@
 ﻿using System;
 using ModernWpf;
 using Prism.Ioc;
+using Prism.Regions;
 using ReactiveUI;
 using WpfApp.Model;
 using WpfApp.Services;
 using WpfApp.ViewModels;
+using WpfApp.Views.Pages;
 
 namespace WpfApp
 {
@@ -21,6 +23,7 @@ namespace WpfApp
 
             var observableUser = activeUser.WhenAnyValue(au => au.User);
 
+            containerRegistry.RegisterSingleton<IRegionManager, RegionManager>();
             containerRegistry.RegisterSingleton<IDialogService, DialogService>();
             containerRegistry.RegisterSingleton<INavigationService, NavigationService>();
             containerRegistry.RegisterSingleton<ThemeManager>(() => ThemeManager.Current);
@@ -30,6 +33,9 @@ namespace WpfApp
 
             containerRegistry.RegisterSingleton<ChangeThemeVM>();
             containerRegistry.RegisterSingleton<MainWindowVM>();
+
+            containerRegistry.RegisterForNavigation<HomePage>(NavigationService.Home);
+            containerRegistry.RegisterForNavigation<LoginPage>(NavigationService.Login);
         }
     }
 }
