@@ -14,7 +14,7 @@ namespace WpfApp.ViewModels
         private readonly INavigationService _navigationService;
         private readonly CompositeDisposable _disposable;
         private readonly ObservableAsPropertyHelper<bool> _userLoggedIn;
-        private string? _selectedItem;
+        private string? _selectedTag;
 
         public MainWindowVM(
             ChangeThemeVM changeTheme, 
@@ -26,8 +26,6 @@ namespace WpfApp.ViewModels
 
             ChangeThemeVM = NotNull(changeTheme, nameof(changeTheme));
 
-            ViewSelected = ReactiveCommand.Create<string>(_navigationService.NavigateTo);
-
             var cgbObservable = _navigationService
                 .WhenAnyValue(x => x.CanGoBack);
 
@@ -37,15 +35,23 @@ namespace WpfApp.ViewModels
                 .Select(user => user != null)
                 .ToProperty(this, x => x.UserLoggedIn, out _userLoggedIn)
                 .DisposeWith(_disposable);
-        }
 
-        public ICommand ViewSelected { get; }
+            this
+                .WhenAnyValue(x => x.SelectedTag)
+                .Subscribe(_navigationService.NavigateTo);
+        }
 
         public ICommand BackRequested { get; }
 
         public ChangeThemeVM ChangeThemeVM { get; }
 
         public bool UserLoggedIn => _userLoggedIn.Value;
+
+        public string? SelectedTag
+        {
+            get => _selectedTag;
+            set => this.RaiseAndSetIfChanged(ref _selectedTag, value);
+        }
 
         public void Dispose()
         {

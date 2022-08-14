@@ -90,13 +90,14 @@
         </Grid>
 
         <!--Content-->
-        <ui:NavigationView 
+        <controls:NavigationView 
             x:Name="navigationView"
             Grid.Row="1" 
             PaneDisplayMode="Left" 
             IsTabStop="False"
             IsSettingsVisible="False"
-            IsBackButtonVisible="Collapsed">
+            IsBackButtonVisible="Collapsed"
+            SelectedTag="{Binding SelectedTag, Mode=TwoWay}">
             <ui:NavigationView.Resources>
                 <x:Array x:Key="AccountMenuItems"
                          Type="ui:NavigationViewItem">
@@ -106,14 +107,6 @@
                                            Tag="{x:Static services:NavigationService.AccountDetails}"/>
                 </x:Array>
             </ui:NavigationView.Resources>
-            
-            <b:Interaction.Triggers>
-                <b:EventTrigger EventName="SelectionChanged">
-                    <prism:InvokeCommandAction 
-                        Command="{Binding ViewSelected}"
-                        TriggerParameterPath="SelectedItem.Tag" />
-                </b:EventTrigger>
-            </b:Interaction.Triggers>
 
             <ui:NavigationView.MenuItems>
                 <ui:NavigationViewItem 
@@ -153,6 +146,6 @@
             </ui:NavigationView.MenuItems>
 
             <ContentControl prism:RegionManager.RegionName="{x:Static services:NavigationService.MainRegion}"/>
-        </ui:NavigationView>
+        </controls:NavigationView>
     </Grid>
 </Window>
