@@ -36,9 +36,13 @@ namespace WpfApp.ViewModels
                 .ToProperty(this, x => x.UserLoggedIn, out _userLoggedIn)
                 .DisposeWith(_disposable);
 
-            this
-                .WhenAnyValue(x => x.SelectedTag)
-                .Subscribe(_navigationService.NavigateTo);
+            this.WhenAnyValue(x => x.SelectedTag)
+                .Subscribe(_navigationService.NavigateTo)
+                .DisposeWith(_disposable);
+
+            _navigationService.WhenAnyValue(x => x.CurrentView)
+                .Subscribe(tag => SelectedTag = tag)
+                .DisposeWith(_disposable);
         }
 
         public ICommand BackRequested { get; }
