@@ -12,9 +12,9 @@ namespace WpfApp.ViewModels
     public sealed class MainWindowVM : ReactiveObject, IDisposable
     {
         private readonly INavigationService _navigationService;
-        private CompositeDisposable _disposable;
+        private readonly CompositeDisposable _disposable;
         private readonly ObservableAsPropertyHelper<bool> _userLoggedIn;
-
+        private string? _selectedItem;
 
         public MainWindowVM(
             ChangeThemeVM changeTheme, 
@@ -28,6 +28,11 @@ namespace WpfApp.ViewModels
 
             ViewSelected = ReactiveCommand.Create<string>(_navigationService.NavigateTo);
 
+            var cgbObservable = _navigationService
+                .WhenAnyValue(x => x.CanGoBack);
+
+            BackRequested = ReactiveCommand.Create(_navigationService.GoBack, cgbObservable);
+
             currentUser
                 .Select(user => user != null)
                 .ToProperty(this, x => x.UserLoggedIn, out _userLoggedIn)
@@ -36,9 +41,9 @@ namespace WpfApp.ViewModels
 
         public ICommand ViewSelected { get; }
 
-        public ChangeThemeVM ChangeThemeVM { get; }
+        public ICommand BackRequested { get; }
 
-        public Type? CurrentPage => _navigationService.CurrentPage;
+        public ChangeThemeVM ChangeThemeVM { get; }
 
         public bool UserLoggedIn => _userLoggedIn.Value;
 

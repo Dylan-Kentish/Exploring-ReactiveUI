@@ -5,11 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:ui="http://schemas.modernwpf.com/2019"
         xmlns:vms="clr-namespace:WpfApp.ViewModels"
-        xmlns:local="clr-namespace:WpfApp.Views"
-        xmlns:converters="clr-namespace:WpfApp.Converters" 
-        xmlns:services="clr-namespace:WpfApp.Services" 
-        xmlns:controls="clr-namespace:WpfApp.Controls"
+        xmlns:converters="clr-namespace:WpfApp.Converters"
+        xmlns:services="clr-namespace:WpfApp.Services"
         xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:controls="clr-namespace:WpfApp.Controls"
         xmlns:prism="http://prismlibrary.com/"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance vms:MainWindowVM}"
@@ -20,16 +19,19 @@
         ui:TitleBar.IsBackButtonVisible="True"
         ui:TitleBar.Style="{DynamicResource AppTitleBarStyle}"
         ui:TitleBar.ButtonStyle="{DynamicResource AppTitleBarButtonStyle}"
-        ui:TitleBar.BackButtonStyle="{DynamicResource AppTitleBarBackButtonStyle}">
+        ui:TitleBar.BackButtonStyle="{DynamicResource AppTitleBarBackButtonStyle}"
+        ui:TitleBar.BackButtonCommand="{Binding BackRequested}">
 
     <Window.Resources>
         <converters:PixelsToGridLengthConverter x:Key="PixelsToGridLength" />
-        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/> 
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
         <Style x:Key="AppTitleBarButtonStyle" TargetType="ui:TitleBarButton">
             <Setter Property="IsActive" Value="{Binding IsActive, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" />
         </Style>
         <Style x:Key="AppTitleBarBackButtonStyle" TargetType="ui:TitleBarButton" BasedOn="{StaticResource AppTitleBarButtonStyle}">
-            <Setter Property="IsHitTestVisible" Value="False" />
+            <Setter Property="IsActive" Value="{Binding IsActive, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" />
+            <Setter Property="Content" Value="&#xE72B;"/>
+            <Setter Property="FontSize" Value="13"/>
         </Style>
     </Window.Resources>
 
@@ -89,10 +91,12 @@
 
         <!--Content-->
         <ui:NavigationView 
+            x:Name="navigationView"
             Grid.Row="1" 
             PaneDisplayMode="Left" 
             IsTabStop="False"
-            IsSettingsVisible="False">
+            IsSettingsVisible="False"
+            IsBackButtonVisible="Collapsed">
             <ui:NavigationView.Resources>
                 <x:Array x:Key="AccountMenuItems"
                          Type="ui:NavigationViewItem">
@@ -100,8 +104,9 @@
                                            Icon="Mail" 
                                            ToolTipService.ToolTip="Details" 
                                            Tag="{x:Static services:NavigationService.AccountDetails}"/>
-                </x:Array> 
+                </x:Array>
             </ui:NavigationView.Resources>
+            
             <b:Interaction.Triggers>
                 <b:EventTrigger EventName="SelectionChanged">
                     <prism:InvokeCommandAction 
@@ -147,7 +152,7 @@
                     Tag="{x:Static services:NavigationService.Posts}"/>
             </ui:NavigationView.MenuItems>
 
-            <ui:Frame SourcePageType="{Binding CurrentPage}" />
+            <ContentControl prism:RegionManager.RegionName="{x:Static services:NavigationService.MainRegion}"/>
         </ui:NavigationView>
     </Grid>
 </Window>
