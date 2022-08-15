@@ -24,35 +24,23 @@
             Icon="&#xE721;"/>
     </StackPanel>
 
-    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" >
+    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="5">
         <ItemsControl ItemsSource="{Binding Albums}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <UniformGrid ClipToBounds="True" Columns="3"/>
+                    <UniformGrid Columns="3"/>
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
                 <DataTemplate DataType="{x:Type vms:AlbumVM}">
-                    <Border Background="{DynamicResource ui:DynamicColor.ListMedium}" BorderBrush="Black" BorderThickness="1" Margin="5" MinHeight="80" MinWidth="150">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="*"/>
-                                <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
-
-                            <Image Grid.Row="0" Source="{Binding Thumbnail.Photo}">
-                                <b:Interaction.Triggers>
-                                    <b:EventTrigger EventName="MouseDown">
-                                        <b:InvokeCommandAction Command="{Binding OnClick}" />
-                                    </b:EventTrigger>
-                                </b:Interaction.Triggers>
-                            </Image>
-
-                            <TextBlock Grid.Row="1" Text="{Binding Title}"
-                                       VerticalAlignment="Center"
-                                       HorizontalAlignment="Center"/>
-                        </Grid>
-                    </Border>
+                    <controls:Card Title="{Binding Title}">
+                        <b:Interaction.Triggers>
+                            <b:EventTrigger EventName="MouseDown">
+                                <b:InvokeCommandAction Command="{Binding OnClick}" />
+                            </b:EventTrigger>
+                        </b:Interaction.Triggers>
+                        <Image Source="{Binding Thumbnail.Thumbnail}"/>
+                    </controls:Card>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>

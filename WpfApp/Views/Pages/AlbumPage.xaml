@@ -24,7 +24,7 @@
             Icon="&#xE721;"/>
     </StackPanel>
 
-    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" >
+    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="5" >
         <ItemsControl ItemsSource="{Binding Photos}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
@@ -33,20 +33,9 @@
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
                 <DataTemplate DataType="{x:Type vms:PhotoVM}">
-                    <Border Background="{DynamicResource ui:DynamicColor.ListMedium}" BorderBrush="Black" BorderThickness="1" Margin="5" MinHeight="80" MinWidth="150">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="*"/>
-                                <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
-
-                            <Image Grid.Row="0" Source="{Binding Photo}"/>
-
-                            <TextBlock Grid.Row="1" Text="{Binding Title}"
-                                       VerticalAlignment="Center"
-                                       HorizontalAlignment="Center"/>
-                        </Grid>
-                    </Border>
+                    <controls:Card Title="{Binding Title}">
+                        <Image Source="{Binding Photo}"/>
+                    </controls:Card>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
