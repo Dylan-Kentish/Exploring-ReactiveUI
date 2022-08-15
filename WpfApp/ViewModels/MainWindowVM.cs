@@ -11,7 +11,6 @@ namespace WpfApp.ViewModels
 {
     public sealed class MainWindowVM : ReactiveObject, IDisposable
     {
-        private readonly INavigationService _navigationService;
         private readonly CompositeDisposable _disposable;
         private readonly ObservableAsPropertyHelper<bool> _userLoggedIn;
         private string? _selectedTag;
@@ -21,20 +20,19 @@ namespace WpfApp.ViewModels
             IObservable<User?> currentUser,
             INavigationService navigationService)
         {
-            _navigationService = navigationService;
             _disposable = new CompositeDisposable();
 
             ChangeThemeVM = NotNull(changeTheme, nameof(changeTheme));
 
-            var cgbObservable = _navigationService
+            var cgbObservable = navigationService
                 .WhenAnyValue(x => x.CanGoBack);
 
-            var cgfObservable = _navigationService
+            var cgfObservable = navigationService
                 .WhenAnyValue(x => x.CanGoForward);
 
-            BackRequested = ReactiveCommand.Create(_navigationService.GoBack, cgbObservable);
+            BackRequested = ReactiveCommand.Create(navigationService.GoBack, cgbObservable);
 
-            ForwardRequested = ReactiveCommand.Create(_navigationService.GoForward, cgfObservable);
+            ForwardRequested = ReactiveCommand.Create(navigationService.GoForward, cgfObservable);
 
             currentUser
                 .Select(user => user != null)
@@ -42,12 +40,14 @@ namespace WpfApp.ViewModels
                 .DisposeWith(_disposable);
 
             this.WhenAnyValue(x => x.SelectedTag)
-                .Subscribe(tag => _navigationService.NavigateTo(tag))
+                .Subscribe(tag => navigationService.NavigateTo(tag))
                 .DisposeWith(_disposable);
 
-            _navigationService.WhenAnyValue(x => x.CurrentView)
+            navigationService.WhenAnyValue(x => x.CurrentView)
                 .Subscribe(tag => SelectedTag = tag)
                 .DisposeWith(_disposable);
+
+            SelectedTag = NavigationService.Home;
         }
 
         public ICommand BackRequested { get; }
