@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reactive.Disposables;
-using Prism.Ioc;
 using Prism.Regions;
 using ReactiveUI;
 using WpfApp.Model;
@@ -29,6 +28,7 @@ namespace WpfApp.Services
         private IRegionNavigationJournal? _journal;
         private User? _activeUser;
         private string? _currentView;
+        private bool _navigating;
 
         public NavigationService(
             IRegionManager regionManager, 
@@ -54,35 +54,26 @@ namespace WpfApp.Services
             private set => this.RaiseAndSetIfChanged(ref _canGoForward, value);
         }
 
-        public string CurrentView
+        public string? CurrentView
         {
             get => _currentView;
             set => this.RaiseAndSetIfChanged(ref _currentView, value);
         }
 
-        public void NavigateTo(string? tag)
+        public void NavigateTo(string? tag, Dictionary<string, object>? parameters = null)
         {
-            if (_mainRegion is null &&
-                !GetMainRegion())
+            if (_navigating || tag is null)
             {
                 return;
             }
 
-            if (_activeUser is null && (tag == Account || tag == AccountDetails))
-            {
-                _mainRegion.RequestNavigate(Login);
-            }
-            else
-            {
-                _mainRegion.RequestNavigate(tag, OnNavigation);
-            }
-        }
-
-        public void NavigateTo(string? tag, Dictionary<string, object>? parameters = null)
-        {
             if (_mainRegion is null &&
                 !GetMainRegion())
             {
+                if (parameters is null)
+                {
+                    _regionManager.RegisterViewWithRegion(MainRegion, tag);
+                }
                 return;
             }
 
@@ -95,10 +86,12 @@ namespace WpfApp.Services
                 }
             }
 
+            
+            _navigating = true;
 
-            if (_activeUser is null && (tag == Account || tag == AccountDetails))
+            if (_activeUser is null && tag is Account or AccountDetails)
             {
-                _mainRegion.RequestNavigate(Login, navigationParameters);
+                _mainRegion.RequestNavigate(Login, OnNavigation, navigationParameters);
             }
             else
             {
@@ -149,6 +142,7 @@ namespace WpfApp.Services
             UpdateCanGoBack();
             UpdateCanGoForward();
             UpdateCurrentView(e.Context);
+            _navigating = false;
         }
 
         private void UpdateCanGoBack()
