@@ -12,7 +12,7 @@ namespace WpfApp.ViewModels
     internal class PhotosVM : ReactiveObject, IDisposable, INavigationAware
     {
         private readonly CompositeDisposable _disposables;
-        private Album _model;
+        private Album? _model;
         private ReadOnlyObservableCollection<PhotoVM>? _photos;
         private string? _photoSearch;
 
@@ -41,33 +41,36 @@ namespace WpfApp.ViewModels
 
         public void OnNavigatedTo(NavigationContext navigationContext)
         {
-            if (_model is null && navigationContext.Parameters["Album"] is Album model)
+            if (_model is not null || navigationContext.Parameters["Album"] is not Album model)
             {
-                _model = model;
-
-                Observable.StartAsync(model.GetPhotos)
-                    .Subscribe(photos =>
-                    {
-                        var cache = new SourceCache<Photo, int>(photo => photo.Id);
-                        cache.AddOrUpdate(photos);
-
-                        var albumSearchFilter = this.WhenAnyValue(x => x.PhotoSearch)
-                            .Throttle(TimeSpan.FromSeconds(0.5), RxApp.TaskpoolScheduler)
-                            .Select(query => query?.Trim())
-                            .DistinctUntilChanged()
-                            .ObserveOn(RxApp.MainThreadScheduler)
-                            .Select(MakePhotoFilter);
-
-                        cache
-                            .Connect()
-                            .ObserveOn(RxApp.MainThreadScheduler)
-                            .Transform(x => new PhotoVM(x))
-                            .Bind(out _photos)
-                            .Subscribe(a => this.RaisePropertyChanged(nameof(Photos)))
-                            .DisposeWith(_disposables);
-                    })
-                    .DisposeWith(_disposables);
+                return;
             }
+
+            _model = model;
+
+            Observable.StartAsync(model.GetPhotos)
+                .Subscribe(photos =>
+                {
+                    var cache = new SourceCache<Photo, int>(photo => photo.Id);
+                    cache.AddOrUpdate(photos);
+
+                    var photosSearchFilter = this.WhenAnyValue(x => x.PhotoSearch)
+                        .Throttle(TimeSpan.FromSeconds(0.5), RxApp.TaskpoolScheduler)
+                        .Select(query => query?.Trim())
+                        .DistinctUntilChanged()
+                        .ObserveOn(RxApp.MainThreadScheduler)
+                        .Select(MakePhotoFilter);
+
+                    cache
+                        .Connect()
+                        .Filter(photosSearchFilter)
+                        .ObserveOn(RxApp.MainThreadScheduler)
+                        .Transform(x => new PhotoVM(x))
+                        .Bind(out _photos)
+                        .Subscribe(a => this.RaisePropertyChanged(nameof(Photos)))
+                        .DisposeWith(_disposables);
+                })
+                .DisposeWith(_disposables);
         }
 
         private static Func<Photo, bool> MakePhotoFilter(string? filter)
