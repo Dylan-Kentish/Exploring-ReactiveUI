@@ -8,37 +8,36 @@ using WpfApp.Services;
 using WpfApp.ViewModels;
 using WpfApp.Views.Pages;
 
-namespace WpfApp
+namespace WpfApp;
+
+internal static class ContainerRegistration
 {
-    internal static class ContainerRegistration
+    public static void RegisterTypes(IContainerRegistry containerRegistry)
     {
-        public static void RegisterTypes(IContainerRegistry containerRegistry)
-        {
-            containerRegistry.RegisterManySingleton<DataService>(
-                typeof(IUserService),
-                typeof(IAlbumService),
-                typeof(IPhotoService));
+        containerRegistry.RegisterManySingleton<DataService>(
+            typeof(IUserService),
+            typeof(IAlbumService),
+            typeof(IPhotoService));
 
-            var activeUser = new ActiveUser();
+        var activeUser = new ActiveUser();
 
-            var observableUser = activeUser.WhenAnyValue(au => au.User);
+        var observableUser = activeUser.WhenAnyValue(au => au.User);
 
-            containerRegistry.RegisterSingleton<IRegionManager, RegionManager>();
-            containerRegistry.RegisterSingleton<IDialogService, DialogService>();
-            containerRegistry.RegisterSingleton<INavigationService, NavigationService>();
-            containerRegistry.RegisterSingleton<ThemeManager>(() => ThemeManager.Current);
+        containerRegistry.RegisterSingleton<IRegionManager, RegionManager>();
+        containerRegistry.RegisterSingleton<IDialogService, DialogService>();
+        containerRegistry.RegisterSingleton<INavigationService, NavigationService>();
+        containerRegistry.RegisterSingleton<ThemeManager>(() => ThemeManager.Current);
 
-            containerRegistry.RegisterSingleton<ActiveUser>(() => activeUser);
-            containerRegistry.RegisterSingleton<IObservable<User?>>(() => observableUser);
+        containerRegistry.RegisterSingleton<ActiveUser>(() => activeUser);
+        containerRegistry.RegisterSingleton<IObservable<User?>>(() => observableUser);
 
-            containerRegistry.RegisterSingleton<ChangeThemeVM>();
-            containerRegistry.RegisterSingleton<MainWindowVM>();
+        containerRegistry.RegisterSingleton<ChangeThemeVM>();
+        containerRegistry.RegisterSingleton<MainWindowVM>();
 
-            containerRegistry.RegisterForNavigation<HomePage>(NavigationService.Home);
-            containerRegistry.RegisterForNavigation<LoginPage, LoginVM>(NavigationService.Login);
-            containerRegistry.RegisterForNavigation<AccountPage, AccountVM>(NavigationService.Account);
-            containerRegistry.RegisterForNavigation<AlbumsPage, AlbumsVM>(NavigationService.Albums);
-            containerRegistry.RegisterForNavigation<AlbumPage, PhotosVM>(NavigationService.Album);
-        }
+        containerRegistry.RegisterForNavigation<HomePage>(NavigationService.Home);
+        containerRegistry.RegisterForNavigation<LoginPage, LoginVM>(NavigationService.Login);
+        containerRegistry.RegisterForNavigation<AccountPage, AccountVM>(NavigationService.Account);
+        containerRegistry.RegisterForNavigation<AlbumsPage, AlbumsVM>(NavigationService.Albums);
+        containerRegistry.RegisterForNavigation<AlbumPage, PhotosVM>(NavigationService.Album);
     }
 }

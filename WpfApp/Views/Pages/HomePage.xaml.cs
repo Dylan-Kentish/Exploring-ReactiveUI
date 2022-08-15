@@ -1,15 +1,14 @@
 ﻿using System.Windows.Controls;
 
-namespace WpfApp.Views.Pages
+namespace WpfApp.Views.Pages;
+
+/// <summary>
+/// Interaction logic for HomePage.xaml
+/// </summary>
+public partial class HomePage : Grid
 {
-    /// <summary>
-    /// Interaction logic for HomePage.xaml
-    /// </summary>
-    public partial class HomePage : Grid
+    public HomePage()
     {
-        public HomePage()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

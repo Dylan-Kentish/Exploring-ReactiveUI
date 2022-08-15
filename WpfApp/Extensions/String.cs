@@ -1,14 +1,13 @@
-﻿namespace WpfApp.Extensions
+﻿namespace WpfApp.Extensions;
+
+internal static class String
 {
-    internal static class String
+    internal static string AddQuery(this string url, string queryProperty, string queryValue)
     {
-        internal static string AddQuery(this string url, string queryProperty, string queryValue)
+        if (url.Contains('?'))
         {
-            if (url.Contains('?'))
-            {
-                return url + $"&{queryProperty}={queryValue}";
-            }
-            return url + $"?{queryProperty}={queryValue}";
+            return url + $"&{queryProperty}={queryValue}";
         }
+        return url + $"?{queryProperty}={queryValue}";
     }
 }

@@ -10,84 +10,83 @@ using Prism.Regions;
 using WpfApp.Services;
 using static Microsoft.Requires;
 
-namespace WpfApp.ViewModels
+namespace WpfApp.ViewModels;
+
+public sealed class AlbumsVM : ReactiveValidationObject, IDisposable, INavigationAware
 {
-    public sealed class AlbumsVM : ReactiveValidationObject, IDisposable, INavigationAware
+    private readonly CompositeDisposable _disposables;
+    private readonly INavigationService _navigationService;
+    private ReadOnlyObservableCollection<AlbumVM>? _albums;
+    private string? _albumSearch;
+    private User? _user;
+
+    public AlbumsVM(
+        INavigationService navigationService)
     {
-        private readonly CompositeDisposable _disposables;
-        private readonly INavigationService _navigationService;
-        private ReadOnlyObservableCollection<AlbumVM>? _albums;
-        private string? _albumSearch;
-        private User? _user;
+        _navigationService = NotNull(navigationService, nameof(navigationService));
+        _disposables = new CompositeDisposable();
+    }
 
-        public AlbumsVM(
-            INavigationService navigationService)
+    public ReadOnlyObservableCollection<AlbumVM>? Albums => _albums;
+
+    public string? AlbumSearch
+    {
+        get => _albumSearch;
+        set => this.RaiseAndSetIfChanged(ref _albumSearch, value);
+    }
+
+    public void OnNavigatedTo(NavigationContext navigationContext)
+    {
+        if (_user is not null || navigationContext.Parameters["User"] is not User user)
         {
-            _navigationService = NotNull(navigationService, nameof(navigationService));
-            _disposables = new CompositeDisposable();
+            return;
         }
 
-        public ReadOnlyObservableCollection<AlbumVM>? Albums => _albums;
+        _user = user;
 
-        public string? AlbumSearch
-        {
-            get => _albumSearch;
-            set => this.RaiseAndSetIfChanged(ref _albumSearch, value);
-        }
-
-        public void OnNavigatedTo(NavigationContext navigationContext)
-        {
-            if (_user is not null || navigationContext.Parameters["User"] is not User user)
+        Observable.StartAsync(user.GetAlbums)
+            .Subscribe(albums =>
             {
-                return;
-            }
+                var cache = new SourceCache<Album, int>(a => a.Id);
+                cache.AddOrUpdate(albums);
+                cache.DisposeWith(_disposables);
 
-            _user = user;
+                var albumSearchFilter = this.WhenAnyValue(x => x.AlbumSearch)
+                    .Throttle(TimeSpan.FromSeconds(0.5), RxApp.TaskpoolScheduler)
+                    .Select(query => query?.Trim())
+                    .DistinctUntilChanged()
+                    .ObserveOn(RxApp.MainThreadScheduler)
+                    .Select(MakeAlbumFilter);
 
-            Observable.StartAsync(user.GetAlbums)
-                .Subscribe(albums =>
-                {
-                    var cache = new SourceCache<Album, int>(a => a.Id);
-                    cache.AddOrUpdate(albums);
-                    cache.DisposeWith(_disposables);
+                cache
+                    .Connect()
+                    .Filter(albumSearchFilter)
+                    .Transform(x => new AlbumVM(_navigationService, x))
+                    .ObserveOn(RxApp.MainThreadScheduler)
+                    .Bind(out _albums)
+                    .Subscribe(a => this.RaisePropertyChanged(nameof(Albums)))
+                    .DisposeWith(_disposables);
 
-                    var albumSearchFilter = this.WhenAnyValue(x => x.AlbumSearch)
-                        .Throttle(TimeSpan.FromSeconds(0.5), RxApp.TaskpoolScheduler)
-                        .Select(query => query?.Trim())
-                        .DistinctUntilChanged()
-                        .ObserveOn(RxApp.MainThreadScheduler)
-                        .Select(MakeAlbumFilter);
+            }).DisposeWith(_disposables);
+    }
 
-                    cache
-                        .Connect()
-                        .Filter(albumSearchFilter)
-                        .Transform(x => new AlbumVM(_navigationService, x))
-                        .ObserveOn(RxApp.MainThreadScheduler)
-                        .Bind(out _albums)
-                        .Subscribe(a => this.RaisePropertyChanged(nameof(Albums)))
-                        .DisposeWith(_disposables);
+    public bool IsNavigationTarget(NavigationContext navigationContext)
+    {
+        return navigationContext.Parameters["User"] is User user &&
+               _user?.Id == user.Id;
+    }
 
-                }).DisposeWith(_disposables);
-        }
+    public void OnNavigatedFrom(NavigationContext navigationContext)
+    {
+    }
 
-        public bool IsNavigationTarget(NavigationContext navigationContext)
-        {
-            return navigationContext.Parameters["User"] is User user &&
-                   _user?.Id == user.Id;
-        }
+    private static Func<Album, bool> MakeAlbumFilter(string? filter)
+    {
+        return album => string.IsNullOrWhiteSpace(filter) || album.Title.Contains(filter, StringComparison.InvariantCultureIgnoreCase);
+    }
 
-        public void OnNavigatedFrom(NavigationContext navigationContext)
-        {
-        }
-
-        private static Func<Album, bool> MakeAlbumFilter(string? filter)
-        {
-            return album => string.IsNullOrWhiteSpace(filter) || album.Title.Contains(filter, StringComparison.InvariantCultureIgnoreCase);
-        }
-
-        public void Dispose()
-        {
-            _disposables.Dispose();
-        }
+    public void Dispose()
+    {
+        _disposables.Dispose();
     }
 }

@@ -1,12 +1,11 @@
 ﻿using System.Windows;
 
-namespace WpfApp.Services
+namespace WpfApp.Services;
+
+public class DialogService : IDialogService
 {
-    public class DialogService : IDialogService
+    public void ShowDialog(string message)
     {
-        public void ShowDialog(string message)
-        {
-            _ = MessageBox.Show(message);
-        }
+        _ = MessageBox.Show(message);
     }
 }

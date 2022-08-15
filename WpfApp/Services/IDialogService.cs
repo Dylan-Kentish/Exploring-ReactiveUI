@@ -1,7 +1,6 @@
-﻿namespace WpfApp.Services
+﻿namespace WpfApp.Services;
+
+public interface IDialogService
 {
-    public interface IDialogService
-    {
-        void ShowDialog(string message);
-    }
+    void ShowDialog(string message);
 }

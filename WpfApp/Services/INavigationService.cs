@@ -1,19 +1,18 @@
 ﻿using System.Collections.Generic;
 
-namespace WpfApp.Services
+namespace WpfApp.Services;
+
+public interface INavigationService
 {
-    public interface INavigationService
-    {
-        bool CanGoBack { get; }
+    bool CanGoBack { get; }
 
-        bool CanGoForward { get; }
+    bool CanGoForward { get; }
 
-        string? CurrentView { get; set; }
+    string? CurrentView { get; set; }
 
-        void NavigateTo(string? tag, Dictionary<string, object>? parameters = null);
+    void NavigateTo(string? tag, Dictionary<string, object>? parameters = null);
 
-        void GoBack();
+    void GoBack();
 
-        void GoForward();
-    }
+    void GoForward();
 }

@@ -1,15 +1,14 @@
 ﻿using System.Windows.Controls;
 
-namespace WpfApp.Views.Pages
+namespace WpfApp.Views.Pages;
+
+/// <summary>
+/// Interaction logic for AlbumPage.xaml
+/// </summary>
+public partial class AlbumPage : Grid
 {
-    /// <summary>
-    /// Interaction logic for AlbumPage.xaml
-    /// </summary>
-    public partial class AlbumPage : Grid
+    public AlbumPage()
     {
-        public AlbumPage()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

@@ -7,81 +7,80 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using WpfApp.Model;
 
-namespace WpfApp.ViewModels
+namespace WpfApp.ViewModels;
+
+internal class PhotosVM : ReactiveObject, IDisposable, INavigationAware
 {
-    internal class PhotosVM : ReactiveObject, IDisposable, INavigationAware
+    private readonly CompositeDisposable _disposables;
+    private Album? _model;
+    private ReadOnlyObservableCollection<PhotoVM>? _photos;
+    private string? _photoSearch;
+
+    public PhotosVM()
     {
-        private readonly CompositeDisposable _disposables;
-        private Album? _model;
-        private ReadOnlyObservableCollection<PhotoVM>? _photos;
-        private string? _photoSearch;
+        _disposables = new CompositeDisposable();
+    }
 
-        public PhotosVM()
+    public ReadOnlyObservableCollection<PhotoVM>? Photos => _photos;
+
+    public string? PhotoSearch
+    {
+        get => _photoSearch;
+        set => this.RaiseAndSetIfChanged(ref _photoSearch, value);
+    }
+
+    public bool IsNavigationTarget(NavigationContext navigationContext)
+    {
+        return navigationContext.Parameters["Album"] is Album model &&
+               _model?.Id == model.Id;
+    }
+
+    public void OnNavigatedFrom(NavigationContext navigationContext)
+    {
+    }
+
+    public void OnNavigatedTo(NavigationContext navigationContext)
+    {
+        if (_model is not null || navigationContext.Parameters["Album"] is not Album model)
         {
-            _disposables = new CompositeDisposable();
+            return;
         }
 
-        public ReadOnlyObservableCollection<PhotoVM>? Photos => _photos;
+        _model = model;
 
-        public string? PhotoSearch
-        {
-            get => _photoSearch;
-            set => this.RaiseAndSetIfChanged(ref _photoSearch, value);
-        }
-
-        public bool IsNavigationTarget(NavigationContext navigationContext)
-        {
-            return navigationContext.Parameters["Album"] is Album model &&
-                _model?.Id == model.Id;
-        }
-
-        public void OnNavigatedFrom(NavigationContext navigationContext)
-        {
-        }
-
-        public void OnNavigatedTo(NavigationContext navigationContext)
-        {
-            if (_model is not null || navigationContext.Parameters["Album"] is not Album model)
+        Observable.StartAsync(model.GetPhotos)
+            .Subscribe(photos =>
             {
-                return;
-            }
+                var cache = new SourceCache<Photo, int>(photo => photo.Id);
+                cache.AddOrUpdate(photos);
+                cache.DisposeWith(_disposables);
 
-            _model = model;
+                var photosSearchFilter = this.WhenAnyValue(x => x.PhotoSearch)
+                    .Throttle(TimeSpan.FromSeconds(0.5), RxApp.TaskpoolScheduler)
+                    .Select(query => query?.Trim())
+                    .DistinctUntilChanged()
+                    .ObserveOn(RxApp.MainThreadScheduler)
+                    .Select(MakePhotoFilter);
 
-            Observable.StartAsync(model.GetPhotos)
-                .Subscribe(photos =>
-                {
-                    var cache = new SourceCache<Photo, int>(photo => photo.Id);
-                    cache.AddOrUpdate(photos);
-                    cache.DisposeWith(_disposables);
+                cache
+                    .Connect()
+                    .Filter(photosSearchFilter)
+                    .ObserveOn(RxApp.MainThreadScheduler)
+                    .Transform(x => new PhotoVM(x))
+                    .Bind(out _photos)
+                    .Subscribe(a => this.RaisePropertyChanged(nameof(Photos)))
+                    .DisposeWith(_disposables);
+            })
+            .DisposeWith(_disposables);
+    }
 
-                    var photosSearchFilter = this.WhenAnyValue(x => x.PhotoSearch)
-                        .Throttle(TimeSpan.FromSeconds(0.5), RxApp.TaskpoolScheduler)
-                        .Select(query => query?.Trim())
-                        .DistinctUntilChanged()
-                        .ObserveOn(RxApp.MainThreadScheduler)
-                        .Select(MakePhotoFilter);
+    private static Func<Photo, bool> MakePhotoFilter(string? filter)
+    {
+        return album => string.IsNullOrWhiteSpace(filter) || album.Title.Contains(filter, StringComparison.InvariantCultureIgnoreCase);
+    }
 
-                    cache
-                        .Connect()
-                        .Filter(photosSearchFilter)
-                        .ObserveOn(RxApp.MainThreadScheduler)
-                        .Transform(x => new PhotoVM(x))
-                        .Bind(out _photos)
-                        .Subscribe(a => this.RaisePropertyChanged(nameof(Photos)))
-                        .DisposeWith(_disposables);
-                })
-                .DisposeWith(_disposables);
-        }
-
-        private static Func<Photo, bool> MakePhotoFilter(string? filter)
-        {
-            return album => string.IsNullOrWhiteSpace(filter) || album.Title.Contains(filter, StringComparison.InvariantCultureIgnoreCase);
-        }
-
-        public void Dispose()
-        {
-            _disposables.Dispose();
-        }
+    public void Dispose()
+    {
+        _disposables.Dispose();
     }
 }
