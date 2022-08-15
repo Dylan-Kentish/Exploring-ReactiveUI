@@ -61,6 +61,7 @@ public sealed class LoginVM : ReactiveValidationObject, IDisposable, IJournalAwa
         filteredUsernames
             .Connect()
             .ObserveOn(RxApp.MainThreadScheduler)
+            .Synchronize()
             .Bind(out _usernames)
             .Subscribe()
             .DisposeWith(_disposable);
