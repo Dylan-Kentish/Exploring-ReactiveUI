@@ -9,7 +9,7 @@ namespace WpfApp.Services
 
         bool CanGoForward { get; }
 
-        string CurrentView { get; set; }
+        string? CurrentView { get; set; }
 
         void NavigateTo(string? tag, Dictionary<string, object>? parameters = null);
 
