@@ -1,25 +1,24 @@
 ﻿using System;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
+using ReactiveUI;
 using WpfApp.Model;
 using static Microsoft.Requires;
 
 namespace WpfApp.ViewModels;
 
-public class PhotoVM
+public class PhotoVM : ReactiveObject
 {
     public PhotoVM(Photo model)
     {
         NotNull(model, nameof(model));
 
         Title = model.Title;
-        Photo = new BitmapImage(
-            new Uri(model.Url));
-        Thumbnail = new BitmapImage(
-            new Uri(model.ThumbnailUrl));
+        Photo = new Uri(model.Url);
+        Thumbnail = new Uri(model.ThumbnailUrl);
     }
 
     public string Title { get; }
-    public ImageSource Photo { get; }
-    public ImageSource Thumbnail { get; }
+
+    public Uri Photo { get; }
+
+    public Uri Thumbnail { get; }
 }
