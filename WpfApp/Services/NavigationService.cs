@@ -101,13 +101,19 @@ namespace WpfApp.Services
 
         public void GoBack()
         {
+            _navigating = true;
             _journal?.GoBack();
+            _navigating = false;
             UpdateCanGoBack();
+            UpdateCanGoForward();
         }
 
         public void GoForward()
         {
+            _navigating = true;
             _journal?.GoForward();
+            _navigating = false;
+            UpdateCanGoBack();
             UpdateCanGoForward();
         }
 
