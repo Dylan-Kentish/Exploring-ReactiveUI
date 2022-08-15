@@ -8,10 +8,10 @@ namespace WpfApp.Controls
     /// <summary>
     /// Interaction logic for NavigationView.xaml
     /// </summary>
-    public partial class NavigationView : ModernWpf.Controls.NavigationView
+    public partial class NavigationView
     {
         public static readonly DependencyProperty SelectedTagProperty =
-            DependencyProperty.Register("SelectedTag", typeof(string), typeof(NavigationView), new PropertyMetadata(NavigationService.Home));
+            DependencyProperty.Register("SelectedTag", typeof(string), typeof(NavigationView), new PropertyMetadata(default));
 
         public NavigationView()
         {
@@ -20,8 +20,8 @@ namespace WpfApp.Controls
 
         public string SelectedTag
         {
-            get { return (string)GetValue(SelectedTagProperty); }
-            set { SetValue(SelectedTagProperty, value); }
+            get => (string)GetValue(SelectedTagProperty);
+            set => SetValue(SelectedTagProperty, value);
         }
 
         protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
@@ -30,8 +30,7 @@ namespace WpfApp.Controls
 
             {
                 if (e.Property == SelectedItemProperty &&
-                    e.NewValue is NavigationViewItem item &&
-                    item.Tag is string tag)
+                    e.NewValue is NavigationViewItem { Tag: string tag })
                 {
                     SelectedTag = tag;
                 }
