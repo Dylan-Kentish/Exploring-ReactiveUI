@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Windows.Input;
@@ -11,6 +13,8 @@ namespace WpfApp.ViewModels
 {
     public sealed class MainWindowVM : ReactiveObject, IDisposable
     {
+        private readonly IObservable<User?> _currentUser;
+        private readonly INavigationService _navigationService;
         private readonly CompositeDisposable _disposable;
         private readonly ObservableAsPropertyHelper<bool> _userLoggedIn;
         private string? _selectedTag;
@@ -20,6 +24,8 @@ namespace WpfApp.ViewModels
             IObservable<User?> currentUser,
             INavigationService navigationService)
         {
+            _currentUser = currentUser;
+            _navigationService = navigationService;
             _disposable = new CompositeDisposable();
 
             ChangeThemeVM = NotNull(changeTheme, nameof(changeTheme));
@@ -40,7 +46,7 @@ namespace WpfApp.ViewModels
                 .DisposeWith(_disposable);
 
             this.WhenAnyValue(x => x.SelectedTag)
-                .Subscribe(tag => navigationService.NavigateTo(tag))
+                .Subscribe(OnSelectedTagChanged)
                 .DisposeWith(_disposable);
 
             navigationService.WhenAnyValue(x => x.CurrentView)
@@ -62,6 +68,21 @@ namespace WpfApp.ViewModels
         {
             get => _selectedTag;
             set => this.RaiseAndSetIfChanged(ref _selectedTag, value);
+        }
+
+        private void OnSelectedTagChanged(string? tag)
+        {
+            Dictionary<string, object> parameters = new();
+
+            switch (tag)
+            {
+                case NavigationService.Albums:
+                    var user = _currentUser.WhereNotNull().Latest().First();
+                    parameters.Add(nameof(User), user);
+                    break;
+            }
+
+            _navigationService.NavigateTo(tag, parameters);
         }
 
         public void Dispose()
