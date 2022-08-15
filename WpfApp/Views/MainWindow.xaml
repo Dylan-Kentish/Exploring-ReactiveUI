@@ -30,16 +30,14 @@
             <Setter Property="Content" Value="&#xE72B;"/>
             <Setter Property="FontSize" Value="13"/>
         </Style>
-        <x:Array x:Key="AccountMenuItems"
-                 Type="ui:NavigationViewItem">
+        <x:Array x:Key="AccountMenuItems" Type="ui:NavigationViewItem">
             <ui:NavigationViewItem Content="Details" 
                                            Icon="Mail" 
                                            ToolTipService.ToolTip="Details" 
                                            Tag="{x:Static services:NavigationService.AccountDetails}"/>
         </x:Array>
 
-        <x:Array x:Key="MenuItems"
-                         Type="ui:NavigationViewItem">
+        <x:Array x:Key="MenuItems" Type="ui:NavigationViewItem">
             <ui:NavigationViewItem 
                     Content="Home"
                     Icon="Home" 

@@ -1,12 +1,11 @@
 ﻿using System.Windows;
-using System.Windows.Controls;
 
 namespace WpfApp.Controls
 {
     /// <summary>
     /// Interaction logic for WatermarkTextBox.xaml
     /// </summary>
-    public partial class WatermarkTextBox : Grid 
+    public partial class WatermarkTextBox
     {
         public WatermarkTextBox()
         {

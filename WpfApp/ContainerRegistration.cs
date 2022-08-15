@@ -29,7 +29,7 @@ namespace WpfApp
             containerRegistry.RegisterSingleton<ThemeManager>(() => ThemeManager.Current);
 
             containerRegistry.RegisterSingleton<ActiveUser>(() => activeUser);
-            containerRegistry.RegisterSingleton<IObservable<User>>(() => observableUser);
+            containerRegistry.RegisterSingleton<IObservable<User?>>(() => observableUser);
 
             containerRegistry.RegisterSingleton<ChangeThemeVM>();
             containerRegistry.RegisterSingleton<MainWindowVM>();

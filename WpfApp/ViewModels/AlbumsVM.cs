@@ -8,6 +8,7 @@ using WpfApp.Model;
 using DynamicData;
 using Prism.Regions;
 using WpfApp.Services;
+using static Microsoft.Requires;
 
 namespace WpfApp.ViewModels
 {
@@ -22,8 +23,8 @@ namespace WpfApp.ViewModels
         public AlbumsVM(
             INavigationService navigationService)
         {
+            _navigationService = NotNull(navigationService, nameof(navigationService));
             _disposables = new CompositeDisposable();
-            _navigationService = navigationService;
         }
 
         public ReadOnlyObservableCollection<AlbumVM>? Albums => _albums;
@@ -48,6 +49,7 @@ namespace WpfApp.ViewModels
                 {
                     var cache = new SourceCache<Album, int>(a => a.Id);
                     cache.AddOrUpdate(albums);
+                    cache.DisposeWith(_disposables);
 
                     var albumSearchFilter = this.WhenAnyValue(x => x.AlbumSearch)
                         .Throttle(TimeSpan.FromSeconds(0.5), RxApp.TaskpoolScheduler)

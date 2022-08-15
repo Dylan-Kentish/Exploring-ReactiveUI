@@ -124,15 +124,12 @@ namespace WpfApp.Services
 
         private bool GetMainRegion()
         {
-            if (_mainRegion is null)
+            if (_mainRegion is null && _regionManager.Regions.ContainsRegionWithName(MainRegion))
             {
-                if (_regionManager.Regions.ContainsRegionWithName(MainRegion))
-                {
-                    _mainRegion = _regionManager.Regions[MainRegion];
-                    _mainRegion.NavigationService.Navigated += NavigationService_Navigated;
+                _mainRegion = _regionManager.Regions[MainRegion];
+                _mainRegion.NavigationService.Navigated += NavigationService_Navigated;
 
-                    _journal = _mainRegion.NavigationService.Journal;
-                }
+                _journal = _mainRegion.NavigationService.Journal;
             }
 
             return _mainRegion != null;

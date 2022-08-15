@@ -1,5 +1,4 @@
 ﻿using DynamicData;
-using DynamicData.Binding;
 using Prism.Regions;
 using ReactiveUI;
 using ReactiveUI.Validation.Extensions;
@@ -32,8 +31,8 @@ namespace WpfApp.ViewModels
             IUserService userService, 
             ActiveUser activeUser)
         {
-            this._navigationService = navigationService;
-            _activeUser = activeUser;
+            _navigationService = NotNull(navigationService, nameof(navigationService));
+            _activeUser = NotNull(activeUser, nameof(activeUser));
             _userService = NotNull(userService, nameof(userService));
             _disposable = new CompositeDisposable();
 

@@ -1,11 +1,9 @@
-﻿using ModernWpf.Controls.Primitives;
-
-namespace WpfApp.Controls
+﻿namespace WpfApp.Controls
 {
     /// <summary>
     /// Interaction logic for ChangeThemeButton.xaml
     /// </summary>
-    public partial class ChangeThemeButton : TitleBarButton
+    public partial class ChangeThemeButton
     {
         public ChangeThemeButton()
         {

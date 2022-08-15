@@ -24,11 +24,10 @@ namespace WpfApp.ViewModels
             IObservable<User?> currentUser,
             INavigationService navigationService)
         {
-            _currentUser = currentUser;
-            _navigationService = navigationService;
-            _disposable = new CompositeDisposable();
-
             ChangeThemeVM = NotNull(changeTheme, nameof(changeTheme));
+            _currentUser = NotNull(currentUser, nameof(currentUser));
+            _navigationService = NotNull(navigationService, nameof(navigationService));
+            _disposable = new CompositeDisposable();
 
             var cgbObservable = navigationService
                 .WhenAnyValue(x => x.CanGoBack);
@@ -41,7 +40,7 @@ namespace WpfApp.ViewModels
             ForwardRequested = ReactiveCommand.Create(navigationService.GoForward, cgfObservable);
 
             currentUser
-                .Select(user => user != null)
+                .Select(user => user is not null)
                 .ToProperty(this, x => x.UserLoggedIn, out _userLoggedIn)
                 .DisposeWith(_disposable);
 

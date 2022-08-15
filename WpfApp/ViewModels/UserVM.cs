@@ -1,4 +1,5 @@
 ﻿using WpfApp.Model;
+using static Microsoft.Requires;
 
 namespace WpfApp.ViewModels;
 
@@ -8,7 +9,7 @@ public class UserVM
 
     public UserVM(User model)
     {
-        _model = model;
+        _model = NotNull(model, nameof(model)) ;
     }
 
     public int Id => _model.Id;

@@ -2,6 +2,7 @@
 using System.Windows.Input;
 using ModernWpf;
 using ReactiveUI;
+using static Microsoft.Requires;
 
 namespace WpfApp.ViewModels
 {
@@ -11,7 +12,7 @@ namespace WpfApp.ViewModels
 
         public ChangeThemeVM(ThemeManager themeManager)
         {
-            _themeManager = themeManager;
+            _themeManager = NotNull(themeManager, nameof(themeManager));
             ChangeTheme = ReactiveCommand.Create(ChangeThemeInternal);
         }
 

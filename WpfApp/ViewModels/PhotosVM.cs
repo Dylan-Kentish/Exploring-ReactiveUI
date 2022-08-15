@@ -53,6 +53,7 @@ namespace WpfApp.ViewModels
                 {
                     var cache = new SourceCache<Photo, int>(photo => photo.Id);
                     cache.AddOrUpdate(photos);
+                    cache.DisposeWith(_disposables);
 
                     var photosSearchFilter = this.WhenAnyValue(x => x.PhotoSearch)
                         .Throttle(TimeSpan.FromSeconds(0.5), RxApp.TaskpoolScheduler)

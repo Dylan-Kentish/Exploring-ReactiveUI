@@ -20,9 +20,7 @@ namespace WpfApp.Model
         public string Name { get; }
         public string Username { get; }
 
-        public Task<IEnumerable<Album>> GetAlbums()
-        {
-            return _albumService.GetUserAlbums(this);
+        public Task<IEnumerable<Album>> GetAlbums() => _albumService.GetUserAlbums(this);
         }
     }
 }

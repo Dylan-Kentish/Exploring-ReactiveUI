@@ -1,7 +1,6 @@
 ﻿using ModernWpf.Controls;
 using System.Windows;
 using System.Linq;
-using WpfApp.Services;
 
 namespace WpfApp.Controls
 {
