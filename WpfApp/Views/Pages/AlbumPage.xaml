@@ -19,7 +19,7 @@
         HorizontalAlignment="Right"
         Orientation="Horizontal">
         <controls:WatermarkTextBox 
-            Text="{Binding PhotosSearch, UpdateSourceTrigger=PropertyChanged}"
+            Text="{Binding PhotoSearch, UpdateSourceTrigger=PropertyChanged}"
             Watermark="Search"
             Icon="&#xE721;"/>
     </StackPanel>
