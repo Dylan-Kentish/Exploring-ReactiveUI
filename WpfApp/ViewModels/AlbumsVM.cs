@@ -43,30 +43,31 @@ public sealed class AlbumsVM : ReactiveValidationObject, IDisposable, INavigatio
         }
 
         _user = user;
+        
+        var cache = new SourceCache<Album, int>(a => a.Id);
+        cache.DisposeWith(_disposables);
 
-        Observable.StartAsync(user.GetAlbums)
+        var albumSearchFilter = this.WhenAnyValue(x => x.AlbumSearch)
+            .Throttle(TimeSpan.FromSeconds(0.5), RxApp.TaskpoolScheduler)
+            .Select(query => query?.Trim())
+            .DistinctUntilChanged()
+            .ObserveOn(RxApp.MainThreadScheduler)
+            .Select(MakeAlbumFilter);
+
+        cache
+            .Connect()
+            .Filter(albumSearchFilter)
+            .Transform(x => new AlbumVM(_navigationService, x))
+            .ObserveOn(RxApp.MainThreadScheduler)
+            .Bind(out _albums)
+            .Subscribe(a => this.RaisePropertyChanged(nameof(Albums)))
+            .DisposeWith(_disposables);
+
+        Observable.StartAsync(user.GetAlbums, RxApp.TaskpoolScheduler)
             .Subscribe(albums =>
             {
-                var cache = new SourceCache<Album, int>(a => a.Id);
+                cache.Clear();
                 cache.AddOrUpdate(albums);
-                cache.DisposeWith(_disposables);
-
-                var albumSearchFilter = this.WhenAnyValue(x => x.AlbumSearch)
-                    .Throttle(TimeSpan.FromSeconds(0.5), RxApp.TaskpoolScheduler)
-                    .Select(query => query?.Trim())
-                    .DistinctUntilChanged()
-                    .ObserveOn(RxApp.MainThreadScheduler)
-                    .Select(MakeAlbumFilter);
-
-                cache
-                    .Connect()
-                    .Filter(albumSearchFilter)
-                    .Transform(x => new AlbumVM(_navigationService, x))
-                    .ObserveOn(RxApp.MainThreadScheduler)
-                    .Bind(out _albums)
-                    .Subscribe(a => this.RaisePropertyChanged(nameof(Albums)))
-                    .DisposeWith(_disposables);
-
             }).DisposeWith(_disposables);
     }
 

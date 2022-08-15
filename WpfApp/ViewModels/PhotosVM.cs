@@ -3,6 +3,8 @@ using Prism.Regions;
 using ReactiveUI;
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
+using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using WpfApp.Model;
@@ -48,30 +50,31 @@ internal class PhotosVM : ReactiveObject, IDisposable, INavigationAware
 
         _model = model;
 
-        Observable.StartAsync(model.GetPhotos)
+        var cache = new SourceCache<Photo, int>(photo => photo.Id);
+        cache.DisposeWith(_disposables);
+
+        var photosSearchFilter = this.WhenAnyValue(x => x.PhotoSearch)
+            .Throttle(TimeSpan.FromSeconds(0.5), RxApp.TaskpoolScheduler)
+            .Select(query => query?.Trim())
+            .DistinctUntilChanged()
+            .ObserveOn(RxApp.MainThreadScheduler)
+            .Select(MakePhotoFilter);
+
+        cache
+            .Connect()
+            .Filter(photosSearchFilter)
+            .Transform(x => new PhotoVM(x))
+            .ObserveOn(RxApp.MainThreadScheduler)
+            .Bind(out _photos)
+            .Subscribe()
+            .DisposeWith(_disposables);
+        
+        Observable.StartAsync(_model.GetPhotos, RxApp.TaskpoolScheduler)
             .Subscribe(photos =>
             {
-                var cache = new SourceCache<Photo, int>(photo => photo.Id);
+                cache.Clear();
                 cache.AddOrUpdate(photos);
-                cache.DisposeWith(_disposables);
-
-                var photosSearchFilter = this.WhenAnyValue(x => x.PhotoSearch)
-                    .Throttle(TimeSpan.FromSeconds(0.5), RxApp.TaskpoolScheduler)
-                    .Select(query => query?.Trim())
-                    .DistinctUntilChanged()
-                    .ObserveOn(RxApp.MainThreadScheduler)
-                    .Select(MakePhotoFilter);
-
-                cache
-                    .Connect()
-                    .Filter(photosSearchFilter)
-                    .ObserveOn(RxApp.MainThreadScheduler)
-                    .Transform(x => new PhotoVM(x))
-                    .Bind(out _photos)
-                    .Subscribe(a => this.RaisePropertyChanged(nameof(Photos)))
-                    .DisposeWith(_disposables);
-            })
-            .DisposeWith(_disposables);
+            });
     }
 
     private static Func<Photo, bool> MakePhotoFilter(string? filter)
