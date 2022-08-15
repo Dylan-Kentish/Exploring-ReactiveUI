@@ -26,8 +26,7 @@
                 PlaceholderText="Username"
                 Text="{Binding Username, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                 ItemsSource="{Binding Usernames}"
-                ui:ValidationHelper.IsTemplateValidationAdornerSite="True">
-            </ui:AutoSuggestBox>
+                ui:ValidationHelper.IsTemplateValidationAdornerSite="True" />
             <Button 
                 Content="Login" 
                 HorizontalAlignment="Stretch"

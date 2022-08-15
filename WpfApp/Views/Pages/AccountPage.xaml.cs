@@ -1,11 +1,9 @@
-﻿using System.Windows.Controls;
-
-namespace WpfApp.Views.Pages;
+﻿namespace WpfApp.Views.Pages;
 
 /// <summary>
 /// Interaction logic for AccountPage.xaml
 /// </summary>
-public partial class AccountPage : Grid
+public partial class AccountPage
 {
     public AccountPage()
     {
