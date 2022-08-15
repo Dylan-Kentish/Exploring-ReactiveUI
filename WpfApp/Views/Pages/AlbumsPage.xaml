@@ -24,25 +24,19 @@
             Icon="&#xE721;"/>
     </StackPanel>
 
-    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="5">
-        <ItemsControl ItemsSource="{Binding Albums}">
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <UniformGrid Columns="3"/>
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-            <ItemsControl.ItemTemplate>
-                <DataTemplate DataType="{x:Type vms:AlbumVM}">
-                    <controls:Card Title="{Binding Title}">
-                        <b:Interaction.Triggers>
-                            <b:EventTrigger EventName="MouseDown">
-                                <b:InvokeCommandAction Command="{Binding OnClick}" />
-                            </b:EventTrigger>
-                        </b:Interaction.Triggers>
-                        <Image Source="{Binding Thumbnail.Thumbnail}"/>
-                    </controls:Card>
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
-    </ScrollViewer>
+    <controls:UniformItemsScrollViewer 
+        Grid.Row="1"
+        ItemsSource="{Binding Albums}"
+        Columns="3">
+        <DataTemplate DataType="{x:Type vms:AlbumVM}">
+            <controls:Card Title="{Binding Title}">
+                <b:Interaction.Triggers>
+                    <b:EventTrigger EventName="MouseDown">
+                        <b:InvokeCommandAction Command="{Binding OnClick}" />
+                    </b:EventTrigger>
+                </b:Interaction.Triggers>
+                <Image Source="{Binding Thumbnail.Thumbnail}"/>
+            </controls:Card>
+        </DataTemplate>
+    </controls:UniformItemsScrollViewer>
 </Grid>

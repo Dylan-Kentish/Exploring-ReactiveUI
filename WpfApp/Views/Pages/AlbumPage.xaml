@@ -24,20 +24,15 @@
             Icon="&#xE721;"/>
     </StackPanel>
 
-    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="5" >
-        <ItemsControl ItemsSource="{Binding Photos}">
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <UniformGrid ClipToBounds="True" Columns="3"/>
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-            <ItemsControl.ItemTemplate>
-                <DataTemplate DataType="{x:Type vms:PhotoVM}">
-                    <controls:Card Title="{Binding Title}">
-                        <Image Source="{Binding Photo}"/>
-                    </controls:Card>
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
-    </ScrollViewer>
+    
+    <controls:UniformItemsScrollViewer 
+        Grid.Row="1"
+        ItemsSource="{Binding Photos}"
+        Columns="3">
+        <DataTemplate DataType="{x:Type vms:PhotoVM}">
+            <controls:Card Title="{Binding Title}">
+                <Image Source="{Binding Photo}"/>
+            </controls:Card>
+        </DataTemplate>
+    </controls:UniformItemsScrollViewer>
 </Grid>
