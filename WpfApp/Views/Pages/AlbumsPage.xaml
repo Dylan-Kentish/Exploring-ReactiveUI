@@ -34,22 +34,11 @@
             <ItemsControl.ItemTemplate>
                 <DataTemplate DataType="{x:Type vms:AlbumVM}">
                     <Border Background="{DynamicResource ui:DynamicColor.ListMedium}" BorderBrush="Black" BorderThickness="1" Margin="5" MinHeight="80" MinWidth="150">
-                        <b:Interaction.Triggers>
-                            <b:EventTrigger EventName="MouseDown">
-                                <b:InvokeCommandAction Command="{Binding OnClick}" />
-                            </b:EventTrigger>
-                        </b:Interaction.Triggers>
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="*"/>
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
-
-                            <b:Interaction.Triggers>
-                                <b:EventTrigger EventName="MouseDown">
-                                    <b:InvokeCommandAction Command="{Binding OnClick}" />
-                                </b:EventTrigger>
-                            </b:Interaction.Triggers>
 
                             <Image Grid.Row="0" Source="{Binding Thumbnail.Photo}">
                                 <b:Interaction.Triggers>
