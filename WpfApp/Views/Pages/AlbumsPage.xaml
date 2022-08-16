@@ -14,15 +14,12 @@
         <RowDefinition Height="*"/>
     </Grid.RowDefinitions>
 
-    <StackPanel 
+    <controls:WatermarkTextBox 
         Grid.Row="0"
         HorizontalAlignment="Right"
-        Orientation="Horizontal">
-        <controls:WatermarkTextBox 
-            Text="{Binding AlbumSearch, UpdateSourceTrigger=PropertyChanged}"
-            Watermark="Search"
-            Icon="&#xE721;"/>
-    </StackPanel>
+        Text="{Binding AlbumSearch, UpdateSourceTrigger=PropertyChanged}"
+        Watermark="Search"
+        Icon="Find"/>
 
     <controls:UniformItemsScrollViewer 
         Grid.Row="1"

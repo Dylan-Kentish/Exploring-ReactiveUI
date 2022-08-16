@@ -15,15 +15,12 @@
         <RowDefinition Height="Auto"/>
     </Grid.RowDefinitions>
 
-    <StackPanel 
+    <controls:WatermarkTextBox 
         Grid.Row="0"
         HorizontalAlignment="Right"
-        Orientation="Horizontal">
-        <controls:WatermarkTextBox 
-            Text="{Binding PhotoSearch, UpdateSourceTrigger=PropertyChanged}"
-            Watermark="Search"
-            Icon="&#xE721;"/>
-    </StackPanel>
+        Text="{Binding PhotoSearch, UpdateSourceTrigger=PropertyChanged}"
+        Watermark="Search"
+        Icon="Find"/>
 
     <ItemsControl Grid.Row="1" ItemsSource="{Binding Photos}">
         <ItemsControl.ItemsPanel>
@@ -49,12 +46,10 @@
             Command="{Binding Previous}">
             <ui:SymbolIcon Symbol="Back"/>
         </Button>
-        
+
         <Button
             Command="{Binding Next}">
             <ui:SymbolIcon Symbol="Forward"/>
         </Button>
     </ui:SimpleStackPanel>
-
-
 </Grid>
