@@ -14,7 +14,6 @@ public sealed class NavigationService : ReactiveObject, INavigationService, IDis
     public const string Home = nameof(Home);
     public const string Login = nameof(Login);
     public const string Account = nameof(Account);
-    public const string AccountDetails = nameof(AccountDetails);
     public const string Albums = nameof(Albums);
     public const string Album = nameof(Album);
     public const string Posts = nameof(Posts);
@@ -89,7 +88,7 @@ public sealed class NavigationService : ReactiveObject, INavigationService, IDis
             
         _navigating = true;
 
-        if (_activeUser is null && tag is Account or AccountDetails)
+        if (_activeUser is null && tag is Account)
         {
             _mainRegion.RequestNavigate(Login, OnNavigation, navigationParameters);
         }

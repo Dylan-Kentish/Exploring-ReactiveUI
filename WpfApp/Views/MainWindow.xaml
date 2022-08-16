@@ -30,12 +30,6 @@
             <Setter Property="Content" Value="&#xE72B;"/>
             <Setter Property="FontSize" Value="13"/>
         </Style>
-        <x:Array x:Key="AccountMenuItems" Type="ui:NavigationViewItem">
-            <ui:NavigationViewItem Content="Details" 
-                                           Icon="Mail" 
-                                           ToolTipService.ToolTip="Details" 
-                                           Tag="{x:Static services:NavigationService.AccountDetails}"/>
-        </x:Array>
 
         <x:Array x:Key="MenuItems" Type="ui:NavigationViewItem">
             <ui:NavigationViewItem 
@@ -49,16 +43,6 @@
                     Icon="Contact" 
                     ToolTipService.ToolTip="Account"
                     Tag="{x:Static services:NavigationService.Account}">
-
-                <ui:NavigationViewItem.Style>
-                    <Style TargetType="{x:Type ui:NavigationViewItem}">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding UserLoggedIn}" Value="True">
-                                <Setter Property="MenuItemsSource" Value="{StaticResource AccountMenuItems}"/>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </ui:NavigationViewItem.Style>
             </ui:NavigationViewItem>
 
             <ui:NavigationViewItem 
