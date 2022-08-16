@@ -39,6 +39,8 @@ public sealed class MainWindowVM : ReactiveObject, IDisposable
 
         ForwardRequested = ReactiveCommand.Create(navigationService.GoForward, cgfObservable);
 
+        OnLoaded = ReactiveCommand.Create(() => SelectedTag = NavigationService.Home);
+
         currentUser
             .Select(user => user is not null)
             .ToProperty(this, x => x.UserLoggedIn, out _userLoggedIn)
@@ -51,13 +53,13 @@ public sealed class MainWindowVM : ReactiveObject, IDisposable
         navigationService.WhenAnyValue(x => x.CurrentView)
             .Subscribe(tag => SelectedTag = tag)
             .DisposeWith(_disposable);
-
-        SelectedTag = NavigationService.Home;
     }
 
     public ICommand BackRequested { get; }
 
     public ICommand ForwardRequested { get; }
+
+    public ICommand OnLoaded { get; }
 
     public ChangeThemeVM ChangeThemeVM { get; }
 
