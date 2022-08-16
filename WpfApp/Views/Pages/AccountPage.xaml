@@ -4,11 +4,50 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:vms="clr-namespace:WpfApp.ViewModels"
+             xmlns:ui="http://schemas.modernwpf.com/2019"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance vms:AccountVM}"
              d:DesignHeight="450" d:DesignWidth="800">
-    <StackPanel Orientation="Horizontal">
-        <Label Content="Hello "/>
-        <Label Content="{Binding User.Username}"/>
-    </StackPanel>
+    <ScrollViewer>
+        <ui:SimpleStackPanel Orientation="Vertical" Spacing="10">
+            <ui:SimpleStackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Center">
+                <ui:PersonPicture BadgeNumber="{Binding User.Id}" DisplayName="{Binding User.Name}"/>
+                <Label 
+                    Content="{Binding User.Username}"
+                    VerticalAlignment="Center"
+                    FontSize="50"/>
+            </ui:SimpleStackPanel>
+            <GroupBox Header="Details">
+                <ui:SimpleStackPanel Orientation="Vertical" Spacing="10">
+                    <TextBox ui:ControlHelper.Header="Name:" IsReadOnly="True" Text="{Binding User.Name, Mode=OneWay}" />
+                    <TextBox ui:ControlHelper.Header="Email:" IsReadOnly="True" Text="{Binding User.Email, Mode=OneWay}" />
+                    <TextBox ui:ControlHelper.Header="Phone:" IsReadOnly="True" Text="{Binding User.Phone, Mode=OneWay}" />
+                </ui:SimpleStackPanel>
+            </GroupBox>
+            <GroupBox Header="Address">
+                <ui:SimpleStackPanel Orientation="Vertical" Spacing="10">
+                    <TextBox ui:ControlHelper.Header="Street:" IsReadOnly="True" Text="{Binding User.Address.Street, Mode=OneWay}" />
+                    <TextBox ui:ControlHelper.Header="Suite:" IsReadOnly="True" Text="{Binding User.Address.Suite, Mode=OneWay}" />
+                    <TextBox ui:ControlHelper.Header="City:" IsReadOnly="True" Text="{Binding User.Address.City, Mode=OneWay}" />
+                    <TextBox ui:ControlHelper.Header="ZipCode:" IsReadOnly="True" Text="{Binding User.Address.ZipCode, Mode=OneWay}" />
+                    <GroupBox Header="Geo">
+                        <ui:SimpleStackPanel Orientation="Vertical" Spacing="10">
+                            <TextBox ui:ControlHelper.Header="Latitude:" IsReadOnly="True" Text="{Binding User.Address.Geo.Lat, Mode=OneWay}" />
+                            <TextBox ui:ControlHelper.Header="Longitude:" IsReadOnly="True" Text="{Binding User.Address.Geo.Lng, Mode=OneWay}" />
+                        </ui:SimpleStackPanel>
+                    </GroupBox>
+                </ui:SimpleStackPanel>
+            </GroupBox>
+            <GroupBox Header="Website">
+                <ui:HyperlinkButton Content="Website" NavigateUri="{Binding User.Website, Mode=OneWay}"/>
+            </GroupBox>
+            <GroupBox Header="Company">
+                <ui:SimpleStackPanel Orientation="Vertical" Spacing="10">
+                    <TextBox ui:ControlHelper.Header="Street:" IsReadOnly="True" Text="{Binding User.Company.Name, Mode=OneWay}" />
+                    <TextBox ui:ControlHelper.Header="Street:" IsReadOnly="True" Text="{Binding User.Company.CatchPhrase, Mode=OneWay}" />
+                    <TextBox ui:ControlHelper.Header="Street:" IsReadOnly="True" Text="{Binding User.Company.BS, Mode=OneWay}" />
+                </ui:SimpleStackPanel>
+            </GroupBox>
+        </ui:SimpleStackPanel>
+    </ScrollViewer>
 </Grid>
