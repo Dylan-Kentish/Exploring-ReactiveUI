@@ -3,8 +3,6 @@ using Prism.Regions;
 using ReactiveUI;
 using System;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using WpfApp.Model;
@@ -72,8 +70,11 @@ internal class PhotosVM : ReactiveObject, IDisposable, INavigationAware
         Observable.StartAsync(_model.GetPhotos, RxApp.TaskpoolScheduler)
             .Subscribe(photos =>
             {
-                cache.Clear();
-                cache.AddOrUpdate(photos);
+                cache.Edit(innerCache =>
+                {
+                    innerCache.Clear();
+                    innerCache.AddOrUpdate(photos);
+                });
             });
     }
 

@@ -60,14 +60,17 @@ public sealed class AlbumsVM : ReactiveValidationObject, IDisposable, INavigatio
             .Transform(x => new AlbumVM(_navigationService, x))
             .ObserveOn(RxApp.MainThreadScheduler)
             .Bind(out _albums)
-            .Subscribe(a => this.RaisePropertyChanged(nameof(Albums)))
+            .Subscribe()
             .DisposeWith(_disposables);
 
         Observable.StartAsync(user.GetAlbums, RxApp.TaskpoolScheduler)
             .Subscribe(albums =>
             {
-                cache.Clear();
-                cache.AddOrUpdate(albums);
+                cache.Edit(innerCache =>
+                {
+                    innerCache.Clear();
+                    innerCache.AddOrUpdate(albums);
+                });
             }).DisposeWith(_disposables);
     }
 
