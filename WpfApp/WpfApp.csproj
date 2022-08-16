@@ -17,4 +17,12 @@
     <PackageReference Include="ReactiveUI.WPF" Version="18.3.1" />
   </ItemGroup>
 
+  <ItemGroup>
+  	<Page Include="Properties\DesignTimeResources.xaml">
+      <SubType>Designer</SubType>
+  	  <Generator>MSBuild:Compile</Generator>
+  	  <ContainsDesignTimeResources>true</ContainsDesignTimeResources>
+  	</Page>
+  </ItemGroup>
+
 </Project>
