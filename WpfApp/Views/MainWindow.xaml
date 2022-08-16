@@ -8,7 +8,8 @@
         xmlns:converters="clr-namespace:WpfApp.Converters"
         xmlns:services="clr-namespace:WpfApp.Services"
         xmlns:controls="clr-namespace:WpfApp.Controls"
-        xmlns:prism="http://prismlibrary.com/"
+        xmlns:prism="http://prismlibrary.com/" 
+        xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance vms:MainWindowVM}"
         ui:ThemeManager.IsThemeAware="True"
@@ -20,7 +21,12 @@
         ui:TitleBar.ButtonStyle="{DynamicResource AppTitleBarButtonStyle}"
         ui:TitleBar.BackButtonStyle="{DynamicResource AppTitleBarBackButtonStyle}"
         ui:TitleBar.BackButtonCommand="{Binding BackRequested}">
-
+    <b:Interaction.Triggers>
+        <b:EventTrigger EventName="Loaded">
+            <b:InvokeCommandAction Command="{Binding OnLoaded}" />
+        </b:EventTrigger>
+    </b:Interaction.Triggers>
+    
     <Window.Resources>
         <converters:PixelsToGridLengthConverter x:Key="PixelsToGridLength" />
         <Style x:Key="AppTitleBarButtonStyle" TargetType="ui:TitleBarButton">
