@@ -8,3 +8,4 @@ I have made use of [ModernWpf by Kinnara](https://github.com/Kinnara/ModernWpf).
 
 ModernWpf exposes Font icons using [Segoe MDL2 Assets icons](https://docs.microsoft.com/en-gb/windows/apps/design/style/segoe-ui-symbol-font)
 
+The data used in this project is retrieved from the JSON API provided by [{JSON} Placeholder](https://jsonplaceholder.typicode.com/), this provides placeholder images using [Placeholder.com](https://placeholder.com/)
