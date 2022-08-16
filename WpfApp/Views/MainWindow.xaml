@@ -57,7 +57,7 @@
                     Icon="Message" 
                     ToolTipService.ToolTip="Posts"
                     Tag="{x:Static services:NavigationService.Posts}"
-                    IsEnabled="{Binding UserLoggedIn}"/>
+                    IsEnabled="False"/>
         </x:Array>
     </Window.Resources>
 
