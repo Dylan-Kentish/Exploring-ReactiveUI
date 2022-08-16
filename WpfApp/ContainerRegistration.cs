@@ -34,7 +34,7 @@ internal static class ContainerRegistration
         containerRegistry.RegisterSingleton<ChangeThemeVM>();
         containerRegistry.RegisterSingleton<MainWindowVM>();
 
-        containerRegistry.RegisterForNavigation<HomePage>(NavigationService.Home);
+        containerRegistry.RegisterForNavigation<HomePage, HomeVM>(NavigationService.Home);
         containerRegistry.RegisterForNavigation<LoginPage, LoginVM>(NavigationService.Login);
         containerRegistry.RegisterForNavigation<AccountPage, AccountVM>(NavigationService.Account);
         containerRegistry.RegisterForNavigation<AlbumsPage, AlbumsVM>(NavigationService.Albums);
