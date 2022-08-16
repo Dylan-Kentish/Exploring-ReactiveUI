@@ -42,7 +42,7 @@
                                 <b:InvokeCommandAction Command="{Binding OnClick}" />
                             </b:EventTrigger>
                         </b:Interaction.Triggers>
-                        <Image Source="https://www.fillmurray.com/640/360"/>
+                        <Image Source="{Binding Thumbnail.Thumbnail}"/>
                     </controls:Card>
                 </DataTemplate>
             </ui:ItemsRepeater.ItemTemplate>
