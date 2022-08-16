@@ -61,7 +61,7 @@ internal class PhotosVM : ReactiveObject, IDisposable, INavigationAware
                 var endIndex = r.StartIndex + r.Size;
                 var can = c - endIndex - 1 > 0;
 
-                if (endIndex > c - 1)
+                if (r.StartIndex > c - 1)
                 {
                     VirtualRequest = new VirtualRequest(c / Size, Size);
                 }
