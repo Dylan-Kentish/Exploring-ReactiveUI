@@ -6,6 +6,7 @@
              xmlns:vms="clr-namespace:WpfApp.ViewModels"
              xmlns:controls="clr-namespace:WpfApp.Controls"
              xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:ui="http://schemas.modernwpf.com/2019"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance vms:AlbumsVM}"
              d:DesignHeight="450" d:DesignWidth="800">
@@ -21,19 +22,30 @@
         Watermark="Search"
         Icon="Find"/>
 
-    <controls:UniformItemsScrollViewer 
-        Grid.Row="1"
+    <ScrollViewer
+        Grid.Row="1">
+        <ui:ItemsRepeater
         ItemsSource="{Binding Albums}"
-        Columns="3">
-        <DataTemplate DataType="{x:Type vms:AlbumVM}">
-            <controls:Card Title="{Binding Title}">
-                <b:Interaction.Triggers>
-                    <b:EventTrigger EventName="MouseDown">
-                        <b:InvokeCommandAction Command="{Binding OnClick}" />
-                    </b:EventTrigger>
-                </b:Interaction.Triggers>
-                <Image Source="{Binding Thumbnail.Thumbnail}"/>
-            </controls:Card>
-        </DataTemplate>
-    </controls:UniformItemsScrollViewer>
+        HorizontalAlignment="Stretch">
+            <ui:ItemsRepeater.Layout>
+                <ui:UniformGridLayout 
+                    MinItemWidth="200"
+                    MinItemHeight="150"
+                    ItemsStretch="Uniform"
+                    ItemsJustification="Start"/>
+            </ui:ItemsRepeater.Layout>
+            <ui:ItemsRepeater.ItemTemplate>
+                <DataTemplate DataType="{x:Type vms:AlbumVM}">
+                    <controls:Card Title="{Binding Title}">
+                        <b:Interaction.Triggers>
+                            <b:EventTrigger EventName="MouseDown">
+                                <b:InvokeCommandAction Command="{Binding OnClick}" />
+                            </b:EventTrigger>
+                        </b:Interaction.Triggers>
+                        <Image Source="https://www.fillmurray.com/640/360"/>
+                    </controls:Card>
+                </DataTemplate>
+            </ui:ItemsRepeater.ItemTemplate>
+        </ui:ItemsRepeater>
+    </ScrollViewer>
 </Grid>
