@@ -7,29 +7,11 @@
       d:DataContext="{d:DesignInstance local:WatermarkTextBox}"
       xmlns:local="clr-namespace:WpfApp.Controls"
       xmlns:ui="http://schemas.modernwpf.com/2019">
-    <TextBox x:Name="SearchTextBox" VerticalContentAlignment="Center" 
-             Text="{Binding Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:WatermarkTextBox}}}"
-             MinWidth="150"
-             MaxWidth="150"
-             Margin="5"/>
 
-    <TextBlock IsHitTestVisible="False"
-               Text="{Binding Watermark, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:WatermarkTextBox}}}"
-               VerticalAlignment="Center"
-               HorizontalAlignment="Left"
-               Margin="15,0,0,0"
-               Foreground="DarkGray">
-        <TextBlock.Style>
-            <Style TargetType="{x:Type TextBlock}">
-                <Setter Property="Visibility" Value="Collapsed"/>
-                <Style.Triggers>
-                    <DataTrigger Binding="{Binding IsFocused, ElementName=SearchTextBox}" Value="False">
-                        <Setter Property="Visibility" Value="Visible"/>
-                    </DataTrigger>
-                </Style.Triggers>
-            </Style>
-        </TextBlock.Style>
-    </TextBlock>
+    <TextBox
+        Width="200"
+        Text="{Binding Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:WatermarkTextBox}}}"
+        ui:ControlHelper.PlaceholderText="{Binding Watermark, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:WatermarkTextBox}}}"/>
 
     <ui:FontIcon 
         Glyph="{Binding Icon, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:WatermarkTextBox}}}"
