@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using ModernWpf.Controls;
+using System.Windows;
 
 namespace WpfApp.Controls;
 
@@ -27,7 +28,7 @@ public partial class WatermarkTextBox
 
     public static readonly DependencyProperty IconProperty = DependencyProperty.Register(
         nameof(Icon),
-        typeof(string),
+        typeof(Symbol),
         typeof(WatermarkTextBox));
 
     public string Text
@@ -42,9 +43,9 @@ public partial class WatermarkTextBox
         set => SetValue(WatermarkProperty, value);
     }
 
-    public string Icon
+    public Symbol Icon
     {
-        get => (string)GetValue(IconProperty);
+        get => (Symbol)GetValue(IconProperty);
         set => SetValue(IconProperty, value);
     }
 }

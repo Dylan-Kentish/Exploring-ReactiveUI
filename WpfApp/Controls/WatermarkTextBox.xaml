@@ -9,18 +9,19 @@
       xmlns:ui="http://schemas.modernwpf.com/2019">
 
     <TextBox
+        x:Name="SearchTextBox"
         Width="200"
         Text="{Binding Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:WatermarkTextBox}}}"
         ui:ControlHelper.PlaceholderText="{Binding Watermark, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:WatermarkTextBox}}}"/>
 
-    <ui:FontIcon 
-        Glyph="{Binding Icon, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:WatermarkTextBox}}}"
+    <ui:SymbolIcon 
+        Symbol="{Binding Icon, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:WatermarkTextBox}}}"
         VerticalAlignment="Center"
         HorizontalAlignment="Right"
         Margin="0,0,15,0"
         Foreground="DarkGray">
-        <ui:FontIcon.Style>
-            <Style TargetType="{x:Type ui:FontIcon}">
+        <ui:SymbolIcon.Style>
+            <Style TargetType="{x:Type ui:SymbolIcon}">
                 <Setter Property="Visibility" Value="Collapsed"/>
                 <Style.Triggers>
                     <DataTrigger Binding="{Binding Text, ElementName=SearchTextBox}" Value="">
@@ -28,6 +29,6 @@
                     </DataTrigger>
                 </Style.Triggers>
             </Style>
-        </ui:FontIcon.Style>
-    </ui:FontIcon>
+        </ui:SymbolIcon.Style>
+    </ui:SymbolIcon>
 </Grid>
