@@ -15,6 +15,7 @@ namespace WpfApp.ViewModels;
 public sealed class AlbumsVM : ReactiveValidationObject, IDisposable, INavigationAware
 {
     private readonly CompositeDisposable _disposables;
+    private readonly SourceCache<Album, int> _cache;
     private readonly INavigationService _navigationService;
     private ReadOnlyObservableCollection<AlbumVM>? _albums;
     private string? _albumSearch;
@@ -25,6 +26,25 @@ public sealed class AlbumsVM : ReactiveValidationObject, IDisposable, INavigatio
     {
         _navigationService = NotNull(navigationService, nameof(navigationService));
         _disposables = new CompositeDisposable();
+
+        _cache = new SourceCache<Album, int>(a => a.Id);
+        _cache.DisposeWith(_disposables);
+
+        var albumSearchFilter = this.WhenAnyValue(x => x.AlbumSearch)
+            .Throttle(TimeSpan.FromSeconds(0.5), RxApp.TaskpoolScheduler)
+            .Select(query => query?.Trim())
+            .DistinctUntilChanged()
+            .ObserveOn(RxApp.MainThreadScheduler)
+            .Select(MakeAlbumFilter);
+
+        _cache
+            .Connect()
+            .Filter(albumSearchFilter)
+            .ObserveOn(RxApp.MainThreadScheduler)
+            .Transform(x => new AlbumVM(_navigationService, x))
+            .Bind(out _albums)
+            .Subscribe()
+            .DisposeWith(_disposables);
     }
 
     public ReadOnlyObservableCollection<AlbumVM>? Albums => _albums;
@@ -43,30 +63,11 @@ public sealed class AlbumsVM : ReactiveValidationObject, IDisposable, INavigatio
         }
 
         _user = user;
-        
-        var cache = new SourceCache<Album, int>(a => a.Id);
-        cache.DisposeWith(_disposables);
-
-        var albumSearchFilter = this.WhenAnyValue(x => x.AlbumSearch)
-            .Throttle(TimeSpan.FromSeconds(0.5), RxApp.TaskpoolScheduler)
-            .Select(query => query?.Trim())
-            .DistinctUntilChanged()
-            .ObserveOn(RxApp.MainThreadScheduler)
-            .Select(MakeAlbumFilter);
-
-        cache
-            .Connect()
-            .Filter(albumSearchFilter)
-            .Transform(x => new AlbumVM(_navigationService, x))
-            .ObserveOn(RxApp.MainThreadScheduler)
-            .Bind(out _albums)
-            .Subscribe()
-            .DisposeWith(_disposables);
 
         Observable.StartAsync(user.GetAlbums, RxApp.TaskpoolScheduler)
             .Subscribe(albums =>
             {
-                cache.Edit(innerCache =>
+                _cache.Edit(innerCache =>
                 {
                     innerCache.Clear();
                     innerCache.AddOrUpdate(albums);
