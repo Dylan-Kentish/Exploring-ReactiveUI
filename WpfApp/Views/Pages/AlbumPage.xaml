@@ -5,12 +5,14 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:vms="clr-namespace:WpfApp.ViewModels" 
              xmlns:controls="clr-namespace:WpfApp.Controls"
+             xmlns:ui="http://schemas.modernwpf.com/2019"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance vms:PhotosVM}"
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid.RowDefinitions>
         <RowDefinition Height="Auto"/>
         <RowDefinition Height="*"/>
+        <RowDefinition Height="Auto"/>
     </Grid.RowDefinitions>
 
     <StackPanel 
@@ -23,15 +25,36 @@
             Icon="&#xE721;"/>
     </StackPanel>
 
-    
-    <controls:UniformItemsScrollViewer 
-        Grid.Row="1"
-        ItemsSource="{Binding Photos}"
-        Columns="3">
-        <DataTemplate DataType="{x:Type vms:PhotoVM}">
-            <controls:Card Title="{Binding Title}">
-                <Image Source="{Binding Photo}"/>
-            </controls:Card>
-        </DataTemplate>
-    </controls:UniformItemsScrollViewer>
+    <ItemsControl Grid.Row="1" ItemsSource="{Binding Photos}">
+        <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+                <UniformGrid Rows="2" Columns="3"/>
+            </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+        <ItemsControl.ItemTemplate>
+            <DataTemplate DataType="{x:Type vms:PhotoVM}">
+                <controls:Card Title="{Binding Title}">
+                    <Image Source="{Binding Photo}"/>
+                </controls:Card>
+            </DataTemplate>
+        </ItemsControl.ItemTemplate>
+    </ItemsControl>
+
+    <ui:SimpleStackPanel 
+        Grid.Row="2"
+        HorizontalAlignment="Center"
+        Orientation="Horizontal"
+        Spacing="10">
+        <Button
+            Command="{Binding Previous}">
+            <ui:SymbolIcon Symbol="Back"/>
+        </Button>
+        
+        <Button
+            Command="{Binding Next}">
+            <ui:SymbolIcon Symbol="Forward"/>
+        </Button>
+    </ui:SimpleStackPanel>
+
+
 </Grid>
