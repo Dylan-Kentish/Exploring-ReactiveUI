@@ -14,13 +14,22 @@ public class User
         Id = user.Id;
         Name = user.Name;
         Username = user.Username;
+        Email = user.Email;
+        Address = new Address(user.Address);
+        Phone = user.Phone;
+        Website = user.Website;
+        Company = new Company(user.Company);
     }
 
     public int Id { get; }
     public string Name { get; }
     public string Username { get; }
+    public string Email { get; }
+    public Address Address { get; }
+    public string Phone { get; }
+    public string Website { get; }
+    public Company Company { get; }
 
     public Task<IEnumerable<Album>> GetAlbums() => _albumService.GetUserAlbums(this);
-
 }
 
