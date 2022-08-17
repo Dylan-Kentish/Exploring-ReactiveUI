@@ -19,13 +19,16 @@
             </Grid.RowDefinitions>
 
             <ContentPresenter 
-                VerticalAlignment="Top"
+                VerticalAlignment="Center"
                 Content="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:Card}}, Path=AdditionalContent}" />
 
-            <TextBlock Grid.Row="1" Text="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:Card}}, Path=Title}"
-                       VerticalAlignment="Top"
-                       HorizontalAlignment="Center"
-                       TextWrapping="Wrap"/>
+            <TextBlock 
+                Grid.Row="1" 
+                Text="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:Card}}, Path=Title}"
+                VerticalAlignment="Bottom"
+                HorizontalAlignment="Center"
+                TextTrimming="CharacterEllipsis"/>
+
         </Grid>
     </Border>
 </UserControl>
