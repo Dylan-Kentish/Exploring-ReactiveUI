@@ -61,18 +61,10 @@ public sealed class NavigationService : ReactiveObject, INavigationService, IDis
 
     public void NavigateTo(string? tag, Dictionary<string, object>? parameters = null)
     {
-        if (_navigating || tag is null)
+        if (_navigating || 
+            tag is null ||
+            (_mainRegion is null && !GetMainRegion()))
         {
-            return;
-        }
-
-        if (_mainRegion is null &&
-            !GetMainRegion())
-        {
-            if (parameters is null)
-            {
-                _regionManager.RegisterViewWithRegion(MainRegion, tag);
-            }
             return;
         }
 
@@ -85,7 +77,6 @@ public sealed class NavigationService : ReactiveObject, INavigationService, IDis
             }
         }
 
-            
         _navigating = true;
 
         if (_activeUser is null && tag is Account)
