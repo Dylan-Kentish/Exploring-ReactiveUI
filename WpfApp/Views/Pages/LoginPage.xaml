@@ -10,15 +10,20 @@
       ui:ValidationHelper.IsTemplateValidationAdornerSite="True">
 
     <Border 
-        Background="{DynamicResource ui:DynamicColor.ListMedium}"
-        BorderBrush="Black"
+        Background="{DynamicResource SystemControlBackgroundBaseLowBrush}"
+        BorderBrush="{DynamicResource SystemControlBackgroundBaseHighBrush}"
         BorderThickness="1"
-        Margin="5">
+        Margin="5"
+        HorizontalAlignment="Center"
+        VerticalAlignment="Center"
+        Padding="20"
+        CornerRadius="10">
 
-        <StackPanel
+        <ui:SimpleStackPanel
             HorizontalAlignment="Center"
             VerticalAlignment="Center"
-            Orientation="Vertical">
+            Orientation="Vertical"
+            Spacing="10">
             <ui:AutoSuggestBox
                 Width="150"
                 MaxSuggestionListHeight="200"
@@ -30,8 +35,7 @@
             <Button 
                 Content="Login" 
                 HorizontalAlignment="Stretch"
-                Margin="0, 5, 0, 0"
                 Command="{Binding Login}"/>
-        </StackPanel>
+        </ui:SimpleStackPanel>
     </Border>
 </Grid>
