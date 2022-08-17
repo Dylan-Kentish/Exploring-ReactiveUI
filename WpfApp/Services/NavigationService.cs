@@ -27,7 +27,6 @@ public sealed class NavigationService : ReactiveObject, INavigationService, IDis
     private IRegionNavigationJournal? _journal;
     private User? _activeUser;
     private string? _currentView;
-    private bool _navigating;
 
     public NavigationService(
         IRegionManager regionManager, 
@@ -61,9 +60,7 @@ public sealed class NavigationService : ReactiveObject, INavigationService, IDis
 
     public void NavigateTo(string? tag, Dictionary<string, object>? parameters = null)
     {
-        if (_navigating || 
-            tag is null ||
-            (_mainRegion is null && !GetMainRegion()))
+        if (tag is null || (_mainRegion is null && !GetMainRegion()))
         {
             return;
         }
@@ -77,8 +74,6 @@ public sealed class NavigationService : ReactiveObject, INavigationService, IDis
             }
         }
 
-        _navigating = true;
-
         if (_activeUser is null && tag is Account)
         {
             _mainRegion.RequestNavigate(Login, OnNavigation, navigationParameters);
@@ -91,18 +86,14 @@ public sealed class NavigationService : ReactiveObject, INavigationService, IDis
 
     public void GoBack()
     {
-        _navigating = true;
         _journal?.GoBack();
-        _navigating = false;
         UpdateCanGoBack();
         UpdateCanGoForward();
     }
 
     public void GoForward()
     {
-        _navigating = true;
         _journal?.GoForward();
-        _navigating = false;
         UpdateCanGoBack();
         UpdateCanGoForward();
     }
@@ -135,7 +126,6 @@ public sealed class NavigationService : ReactiveObject, INavigationService, IDis
         UpdateCanGoBack();
         UpdateCanGoForward();
         UpdateCurrentView(e.Context);
-        _navigating = false;
     }
 
     private void UpdateCanGoBack()
