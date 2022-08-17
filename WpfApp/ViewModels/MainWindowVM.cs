@@ -17,7 +17,7 @@ public sealed class MainWindowVM : ReactiveObject, IDisposable
     private readonly INavigationService _navigationService;
     private readonly CompositeDisposable _disposable;
     private readonly ObservableAsPropertyHelper<bool> _userLoggedIn;
-    private string? _selectedTag;
+    private ObservableAsPropertyHelper<string?> _selectedTag;
 
     public MainWindowVM(
         ChangeThemeVM changeTheme, 
@@ -46,12 +46,9 @@ public sealed class MainWindowVM : ReactiveObject, IDisposable
             .ToProperty(this, x => x.UserLoggedIn, out _userLoggedIn)
             .DisposeWith(_disposable);
 
-        this.WhenAnyValue(x => x.SelectedTag)
-            .Subscribe(OnSelectedTagChanged)
-            .DisposeWith(_disposable);
-
-        navigationService.WhenAnyValue(x => x.CurrentView)
-            .Subscribe(tag => SelectedTag = tag)
+        navigationService
+            .WhenAnyValue(x => x.CurrentView)
+            .ToProperty(this, x => x.SelectedTag, out _selectedTag)
             .DisposeWith(_disposable);
     }
 
@@ -67,8 +64,8 @@ public sealed class MainWindowVM : ReactiveObject, IDisposable
 
     public string? SelectedTag
     {
-        get => _selectedTag;
-        set => this.RaiseAndSetIfChanged(ref _selectedTag, value);
+        get => _selectedTag.Value;
+        set => OnSelectedTagChanged(value);
     }
 
     private void OnSelectedTagChanged(string? tag)
